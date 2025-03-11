@@ -5,6 +5,8 @@ import WorkflowDashboard from "./WorkflowDashboard";
 import WorkflowEngine from "./WorkflowEngine";
 import WorkflowIntegration from "./WorkflowIntegration";
 import WorkflowDesigner from "./WorkflowDesigner";
+import WorkflowAnalytics from "./WorkflowAnalytics";
+import WorkflowTemplates from "./WorkflowTemplates";
 
 const WorkflowTabs = () => {
   return (
@@ -12,9 +14,11 @@ const WorkflowTabs = () => {
       <TabsList className="mb-6 w-full justify-start overflow-x-auto">
         <TabsTrigger value="dashboard">لوحة المتابعة</TabsTrigger>
         <TabsTrigger value="manager">إدارة سير العمل</TabsTrigger>
+        <TabsTrigger value="templates">القوالب</TabsTrigger>
         <TabsTrigger value="engine">محرك سير العمل</TabsTrigger>
         <TabsTrigger value="integration">التكامل</TabsTrigger>
         <TabsTrigger value="designer">مصمم سير العمل</TabsTrigger>
+        <TabsTrigger value="analytics">التحليلات</TabsTrigger>
       </TabsList>
 
       <TabsContent value="dashboard">
@@ -23,6 +27,10 @@ const WorkflowTabs = () => {
 
       <TabsContent value="manager">
         <WorkflowManager />
+      </TabsContent>
+
+      <TabsContent value="templates">
+        <WorkflowTemplates />
       </TabsContent>
 
       <TabsContent value="engine">
@@ -35,6 +43,10 @@ const WorkflowTabs = () => {
 
       <TabsContent value="designer">
         <WorkflowDesigner />
+      </TabsContent>
+
+      <TabsContent value="analytics">
+        <WorkflowAnalytics />
       </TabsContent>
     </Tabs>
   );
