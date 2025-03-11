@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useRoutes, Routes, Route } from "react-router-dom";
+import { useRoutes, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/home";
 import Dashboard from "./pages/dashboard";
 import Accounting from "./pages/accounting";
@@ -16,13 +16,18 @@ import HRPage from "./pages/hr";
 import HRPerformance from "./pages/hr/performance";
 import HRAttendance from "./pages/hr/attendance";
 import HRPerformanceTable from "./pages/hr/performance-table";
+import SaaSAdminPage from "./pages/saas-admin";
 import routes from "tempo-routes";
 
 function App() {
+  // Render Tempo routes conditionally
+  const tempoRoutes =
+    import.meta.env.VITE_TEMPO === "true" ? useRoutes(routes) : null;
+
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+    <>
+      {tempoRoutes}
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -43,12 +48,13 @@ function App() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/saas-admin" element={<SaaSAdminPage />} />
           {import.meta.env.VITE_TEMPO === "true" && (
-            <Route path="/tempobook/*" />
+            <Route path="/tempobook/*" element={<div />} />
           )}
         </Routes>
-      </>
-    </Suspense>
+      </Suspense>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LayoutDashboard,
@@ -27,8 +27,30 @@ import CashFlowChart from "./CashFlowChart";
 import QuickReports from "./QuickReports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import DashboardDetailsPopup from "./DashboardDetailsPopup";
+import KPIDetailsPopup from "./KPIDetailsPopup";
 
 const DashboardTabs = () => {
+  const [selectedChart, setSelectedChart] = useState<string | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const [selectedKPI, setSelectedKPI] = useState<string | null>(null);
+  const [isKPIPopupOpen, setIsKPIPopupOpen] = useState(false);
+
+  // معالجة النقر على الرسم البياني
+  const handleChartClick = (chartType: string, period?: string) => {
+    setSelectedChart(chartType);
+    setSelectedPeriod(period || null);
+    setIsPopupOpen(true);
+  };
+
+  // معالجة النقر على بطاقة المؤشر
+  const handleKPIClick = (kpiType: string) => {
+    setSelectedKPI(kpiType);
+    setIsKPIPopupOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
@@ -98,10 +120,10 @@ const DashboardTabs = () => {
         {/* لوحة التحكم الرئيسية */}
         <TabsContent value="main">
           <div className="space-y-6">
-            <KPICards />
+            <KPICards onCardClick={handleKPIClick} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <SalesChart />
-              <CashFlowChart />
+              <SalesChart onChartClick={handleChartClick} />
+              <CashFlowChart onChartClick={handleChartClick} />
             </div>
             <QuickReports />
           </div>
@@ -111,7 +133,10 @@ const DashboardTabs = () => {
         <TabsContent value="sales">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("sales")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -127,7 +152,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("orders")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">عدد الطلبات</p>
@@ -141,7 +169,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("avg_order_value")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -157,7 +188,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("customers_count")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">عدد العملاء</p>
@@ -172,7 +206,7 @@ const DashboardTabs = () => {
                 </div>
               </Card>
             </div>
-            <SalesChart />
+            <SalesChart onChartClick={handleChartClick} />
           </div>
         </TabsContent>
 
@@ -180,7 +214,10 @@ const DashboardTabs = () => {
         <TabsContent value="purchases">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("purchases")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -196,7 +233,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("purchase_orders")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -212,7 +252,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("purchase_avg_value")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -228,7 +271,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("suppliers")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -245,7 +291,7 @@ const DashboardTabs = () => {
                 </div>
               </Card>
             </div>
-            <CashFlowChart />
+            <CashFlowChart onChartClick={handleChartClick} />
           </div>
         </TabsContent>
 
@@ -253,7 +299,10 @@ const DashboardTabs = () => {
         <TabsContent value="inventory">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("total_items")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -269,7 +318,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("inventory_value")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -285,7 +337,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("inventory_movements")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -301,7 +356,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("low_stock")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -325,7 +383,10 @@ const DashboardTabs = () => {
         <TabsContent value="manufacturing">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("production_volume")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">حجم الإنتاج</p>
@@ -339,7 +400,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("production_efficiency")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -355,7 +419,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("defect_rate")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">معدل العيوب</p>
@@ -369,7 +436,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("on_time_delivery")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -459,7 +529,10 @@ const DashboardTabs = () => {
         <TabsContent value="accounting">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("total_revenue")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -475,7 +548,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("total_expenses")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -491,7 +567,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("net_profit")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">صافي الربح</p>
@@ -505,7 +584,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("cash_balance")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -634,7 +716,10 @@ const DashboardTabs = () => {
         <TabsContent value="crm">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("new_customers")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">عملاء جدد</p>
@@ -648,7 +733,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("customer_retention")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -664,7 +752,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("conversion_rate")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -680,7 +771,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("sales_pipeline")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -830,7 +924,10 @@ const DashboardTabs = () => {
         <TabsContent value="hr">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("total_employees")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -844,7 +941,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("employee_turnover")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -860,7 +960,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("avg_performance")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -876,7 +979,10 @@ const DashboardTabs = () => {
                   </div>
                 </div>
               </Card>
-              <Card className="p-4 bg-white">
+              <Card
+                className="p-4 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => handleKPIClick("training_hours")}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -1053,6 +1159,25 @@ const DashboardTabs = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* نافذة تفاصيل الرسم البياني */}
+      {selectedChart && (
+        <DashboardDetailsPopup
+          open={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+          chartType={selectedChart}
+          period={selectedPeriod || undefined}
+        />
+      )}
+
+      {/* نافذة تفاصيل مؤشر الأداء */}
+      {selectedKPI && (
+        <KPIDetailsPopup
+          open={isKPIPopupOpen}
+          onClose={() => setIsKPIPopupOpen(false)}
+          kpiType={selectedKPI}
+        />
+      )}
     </div>
   );
 };

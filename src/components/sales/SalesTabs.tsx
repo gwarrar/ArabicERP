@@ -5,12 +5,14 @@ import SalesOrderList from "./SalesOrderList";
 import SalesReport from "./SalesReport";
 import SalesReturn from "./SalesReturn";
 import CustomerList from "./CustomerList";
+import SalesInvoicesTab from "./SalesInvoicesTab";
 import {
   BarChart3,
   FileText,
   ShoppingCart,
   RotateCcw,
   Users,
+  Receipt,
 } from "lucide-react";
 
 const SalesTabs = () => {
@@ -20,6 +22,10 @@ const SalesTabs = () => {
         <TabsTrigger value="dashboard">
           <BarChart3 className="h-4 w-4 ml-2" />
           لوحة التحكم
+        </TabsTrigger>
+        <TabsTrigger value="invoices">
+          <Receipt className="h-4 w-4 ml-2" />
+          المبيعات
         </TabsTrigger>
         <TabsTrigger value="orders">
           <ShoppingCart className="h-4 w-4 ml-2" />
@@ -41,6 +47,10 @@ const SalesTabs = () => {
 
       <TabsContent value="dashboard">
         <SalesDashboard />
+      </TabsContent>
+
+      <TabsContent value="invoices">
+        <SalesInvoicesTab />
       </TabsContent>
 
       <TabsContent value="orders">

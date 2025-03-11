@@ -1,6 +1,6 @@
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import DashboardTabs from "@/components/dashboard/DashboardTabs";
+import EnhancedDashboardTabs from "@/components/dashboard/EnhancedDashboardTabs";
 import SmartAlert from "@/components/dashboard/SmartAlert";
 
 const Dashboard = () => {
@@ -16,7 +16,7 @@ const Dashboard = () => {
           />
         </div>
 
-        <DashboardTabs />
+        <EnhancedDashboardTabs />
       </div>
     </MainLayout>
   );

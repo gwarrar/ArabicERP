@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UISettings from "./UISettings";
 import UserManagement from "./UserManagement";
 import IntegrationSettings from "./IntegrationSettings";
+// import SimplePrintTemplates from "./SimplePrintTemplates";
 import {
   Palette,
   Users,
@@ -11,6 +12,7 @@ import {
   Database,
   Bell,
   Shield,
+  Printer,
 } from "lucide-react";
 
 const SettingsTabs = () => {
@@ -44,6 +46,10 @@ const SettingsTabs = () => {
         <TabsTrigger value="security">
           <Shield className="h-4 w-4 ml-2" />
           الأمان
+        </TabsTrigger>
+        <TabsTrigger value="print">
+          <Printer className="h-4 w-4 ml-2" />
+          الطباعة
         </TabsTrigger>
       </TabsList>
 
@@ -83,6 +89,13 @@ const SettingsTabs = () => {
       <TabsContent value="security">
         <div className="bg-white p-6 rounded-lg border shadow-sm">
           <h2 className="text-xl font-bold mb-4">إعدادات الأمان</h2>
+          <p className="text-muted-foreground mb-4">قريباً...</p>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="print">
+        <div className="bg-white p-6 rounded-lg border shadow-sm">
+          <h2 className="text-xl font-bold mb-4">إعدادات الطباعة</h2>
           <p className="text-muted-foreground mb-4">قريباً...</p>
         </div>
       </TabsContent>

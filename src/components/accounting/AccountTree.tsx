@@ -18,9 +18,12 @@ import {
   Edit,
   Trash,
   FileText,
+  BookOpen,
 } from "lucide-react";
 import { defaultAccounts } from "@/data/accounts";
 import { Account } from "@/types/accounting";
+import NewAccountForm from "./NewAccountForm";
+import AccountLedger from "./AccountLedger";
 
 interface FlattenedAccount extends Account {
   level?: number;
@@ -33,6 +36,24 @@ const AccountTree = () => {
   const [expandedAccounts, setExpandedAccounts] = useState<
     Record<string, boolean>
   >({});
+  const [accounts, setAccounts] = useState<Account[]>(defaultAccounts);
+  const [showNewAccountForm, setShowNewAccountForm] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [showAccountLedger, setShowAccountLedger] = useState(false);
+  const [ledgerAccount, setLedgerAccount] = useState<Account | null>(null);
+
+  // Available account types
+  const accountTypes = [
+    "asset",
+    "liability",
+    "equity",
+    "income",
+    "expense",
+    "bank",
+    "cash",
+    "receivable",
+    "payable",
+  ];
 
   // Flatten the account tree for display
   const flattenAccounts = (
@@ -67,15 +88,13 @@ const AccountTree = () => {
   };
 
   // Filter accounts based on search term
-  const filteredAccounts = flattenAccounts(defaultAccounts).filter(
-    (account) => {
-      return searchTerm
-        ? account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            account.nameAr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            account.code.includes(searchTerm)
-        : true;
-    },
-  );
+  const filteredAccounts = flattenAccounts(accounts).filter((account) => {
+    return searchTerm
+      ? account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          account.nameAr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          account.code.includes(searchTerm)
+      : true;
+  });
 
   // Toggle account expansion
   const toggleAccountExpansion = (path: string) => {
@@ -85,11 +104,96 @@ const AccountTree = () => {
     }));
   };
 
+  // Open new account form
+  const handleAddAccount = (parentAccount?: Account) => {
+    setSelectedAccount(parentAccount || null);
+    setShowNewAccountForm(true);
+  };
+
+  // Open account ledger
+  const handleViewLedger = (account: Account) => {
+    setLedgerAccount(account);
+    setShowAccountLedger(true);
+  };
+
+  // Add new account to the tree
+  const addNewAccount = (newAccountData: Omit<Account, "id">) => {
+    // Generate a unique ID
+    const newId = `${Date.now()}`;
+    const newAccount: Account = {
+      ...newAccountData,
+      id: newId,
+    };
+
+    if (selectedAccount) {
+      // Add as a child to the selected account
+      const updatedAccounts = addAccountToParent(
+        accounts,
+        selectedAccount.id,
+        newAccount,
+      );
+      setAccounts(updatedAccounts);
+    } else {
+      // Add as a top-level account
+      setAccounts([...accounts, newAccount]);
+    }
+  };
+
+  // Helper function to add an account to a parent account
+  const addAccountToParent = (
+    accounts: Account[],
+    parentId: string,
+    newAccount: Account,
+  ): Account[] => {
+    return accounts.map((account) => {
+      if (account.id === parentId) {
+        // Add to this parent's children
+        return {
+          ...account,
+          children: [...(account.children || []), newAccount],
+        };
+      } else if (account.children && account.children.length > 0) {
+        // Check in children
+        return {
+          ...account,
+          children: addAccountToParent(account.children, parentId, newAccount),
+        };
+      }
+      return account;
+    });
+  };
+
+  // Translate account type to Arabic
+  const getAccountTypeArabic = (type: string) => {
+    switch (type) {
+      case "asset":
+        return "أصول";
+      case "liability":
+        return "خصوم";
+      case "equity":
+        return "حقوق ملكية";
+      case "income":
+        return "إيرادات";
+      case "expense":
+        return "مصروفات";
+      case "bank":
+        return "بنك";
+      case "cash":
+        return "نقد";
+      case "receivable":
+        return "ذمم مدينة";
+      case "payable":
+        return "ذمم دائنة";
+      default:
+        return type;
+    }
+  };
+
   return (
     <Card className="p-6 bg-white dark:bg-[#1e1e2d] dark:text-white">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">شجرة الحسابات</h2>
-        <Button>
+        <Button onClick={() => handleAddAccount()}>
           <Plus className="ml-2 h-4 w-4" />
           حساب جديد
         </Button>
@@ -143,9 +247,16 @@ const AccountTree = () => {
                 return (
                   <TableRow
                     key={account.path}
-                    className={account.isGroup ? "font-medium" : ""}
+                    className={`${account.isGroup ? "font-medium" : ""} hover:bg-gray-50 cursor-pointer`}
+                    onClick={() => handleViewLedger(account)}
                   >
-                    <TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        if (hasChildren) {
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
                       <div
                         className="flex items-center"
                         style={{
@@ -157,9 +268,10 @@ const AccountTree = () => {
                             variant="ghost"
                             size="icon"
                             className="h-5 w-5 p-0 mr-1"
-                            onClick={() =>
-                              toggleAccountExpansion(account.path || "")
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAccountExpansion(account.path || "");
+                            }}
                           >
                             {account.isExpanded ? (
                               <ChevronDown className="h-4 w-4" />
@@ -174,26 +286,55 @@ const AccountTree = () => {
                       </div>
                     </TableCell>
                     <TableCell>{account.code}</TableCell>
-                    <TableCell>
-                      {account.type === "asset" && "أصول"}
-                      {account.type === "liability" && "خصوم"}
-                      {account.type === "equity" && "حقوق ملكية"}
-                      {account.type === "income" && "إيرادات"}
-                      {account.type === "expense" && "مصروفات"}
-                      {account.type === "bank" && "بنك"}
-                      {account.type === "cash" && "نقد"}
-                      {account.type === "receivable" && "ذمم مدينة"}
-                      {account.type === "payable" && "ذمم دائنة"}
-                    </TableCell>
+                    <TableCell>{getAccountTypeArabic(account.type)}</TableCell>
                     <TableCell className="text-left">
                       {account.balance.toLocaleString()} ₴
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell
+                      className="text-right"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewLedger(account);
+                          }}
+                          title="عرض دفتر الأستاذ"
+                        >
+                          <BookOpen className="h-4 w-4" />
+                        </Button>
+                        {(account.isGroup || !account.children) && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddAccount(account);
+                            }}
+                            title={
+                              account.isGroup
+                                ? "إضافة حساب فرعي"
+                                : "إضافة حساب في نفس المستوى"
+                            }
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Trash className="h-4 w-4" />
                         </Button>
                       </div>
@@ -205,6 +346,24 @@ const AccountTree = () => {
           </TableBody>
         </Table>
       </div>
+
+      {/* New Account Form Dialog */}
+      <NewAccountForm
+        open={showNewAccountForm}
+        onClose={() => setShowNewAccountForm(false)}
+        onSave={addNewAccount}
+        parentAccount={selectedAccount || undefined}
+        accountTypes={accountTypes}
+      />
+
+      {/* Account Ledger Dialog */}
+      {ledgerAccount && (
+        <AccountLedger
+          open={showAccountLedger}
+          onClose={() => setShowAccountLedger(false)}
+          account={ledgerAccount}
+        />
+      )}
     </Card>
   );
 };

@@ -30,6 +30,7 @@ interface SalesChartProps {
   title?: string;
   percentageChange?: number;
   period?: string;
+  onChartClick?: (chartType: string, period?: string) => void;
 }
 
 const SalesChart = ({
@@ -44,15 +45,24 @@ const SalesChart = ({
   title = "تحليل المبيعات",
   percentageChange = 12.5,
   period = "شهري",
+  onChartClick,
 }: SalesChartProps) => {
   const [timeFilter, setTimeFilter] = useState("شهري");
 
   const isPositiveChange = percentageChange >= 0;
 
+  // معالجة النقر على الرسم البياني
+  const handleChartClick = (chartType: string, period?: string) => {
+    if (onChartClick) {
+      onChartClick(chartType, period);
+    }
+  };
+
   return (
     <Card
-      className="w-full h-full bg-white shadow-sm border border-[#e2e8f0] rounded-[0.5rem]"
+      className="w-full h-full bg-white shadow-sm border border-[#e2e8f0] rounded-[0.5rem] cursor-pointer hover:shadow-md transition-shadow"
       dir="rtl"
+      onClick={() => handleChartClick("sales")}
     >
       <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
         <div>
@@ -73,8 +83,20 @@ const SalesChart = ({
             <span className="text-[#64748b] mr-2">مقارنة بالفترة السابقة</span>
           </div>
         </div>
-        <Select value={timeFilter} onValueChange={setTimeFilter}>
-          <SelectTrigger className="w-[120px] h-9 border-[#e2e8f0]">
+        <Select
+          value={timeFilter}
+          onValueChange={setTimeFilter}
+          onOpenChange={(open) => {
+            if (open) {
+              // منع انتشار الحدث عند فتح القائمة المنسدلة
+              event?.stopPropagation();
+            }
+          }}
+        >
+          <SelectTrigger
+            className="w-[120px] h-9 border-[#e2e8f0]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Calendar className="h-4 w-4 ml-2 text-[#64748b]" />
             <SelectValue placeholder="الفترة" />
           </SelectTrigger>
@@ -96,6 +118,14 @@ const SalesChart = ({
                 right: 30,
                 left: 20,
                 bottom: 25,
+              }}
+              onClick={(data) => {
+                if (data.activePayload) {
+                  handleChartClick(
+                    "sales",
+                    data.activePayload[0].payload.month,
+                  );
+                }
               }}
             >
               <CartesianGrid
@@ -134,6 +164,12 @@ const SalesChart = ({
                 verticalAlign="top"
                 align="right"
                 wrapperStyle={{ paddingBottom: "10px", fontSize: "12px" }}
+                onClick={(data) =>
+                  handleChartClick(
+                    "sales",
+                    data.dataKey === "sales" ? undefined : undefined,
+                  )
+                }
               />
               <Bar
                 name="المبيعات"
@@ -141,6 +177,7 @@ const SalesChart = ({
                 fill="#3b82f6"
                 radius={[4, 4, 0, 0]}
                 barSize={30}
+                onClick={(data) => handleChartClick("sales", data.month)}
               />
               <Bar
                 name="المستهدف"
@@ -148,6 +185,7 @@ const SalesChart = ({
                 fill="#e2e8f0"
                 radius={[4, 4, 0, 0]}
                 barSize={30}
+                onClick={(data) => handleChartClick("sales", data.month)}
               />
             </BarChart>
           </ResponsiveContainer>

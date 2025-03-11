@@ -27,6 +27,7 @@ interface CashFlowChartProps {
   data?: CashFlowData[];
   title?: string;
   subtitle?: string;
+  onChartClick?: (chartType: string, period?: string) => void;
 }
 
 const defaultData: CashFlowData[] = [
@@ -42,6 +43,7 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
   data = defaultData,
   title = "التدفق النقدي",
   subtitle = "تحليل الإيرادات والمصروفات",
+  onChartClick,
 }) => {
   const [period, setPeriod] = useState("monthly");
   const [view, setView] = useState("chart");
@@ -57,10 +59,25 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
     ...data.map((item) => Math.max(item.income, item.expenses)),
   );
 
+  // معالجة النقر على الرسم البياني
+  const handleChartClick = (chartType: string, period?: string) => {
+    if (onChartClick) {
+      onChartClick(chartType, period);
+    }
+  };
+
+  // معالجة النقر على شريط الرسم البياني
+  const handleBarClick = (month: string) => {
+    if (onChartClick) {
+      onChartClick("cashflow", month);
+    }
+  };
+
   return (
     <Card
-      className="w-full h-full bg-white shadow-sm border border-[#e2e8f0] rounded-[0.5rem]"
+      className="w-full h-full bg-white shadow-sm border border-[#e2e8f0] rounded-[0.5rem] cursor-pointer hover:shadow-md transition-shadow"
       dir="rtl"
+      onClick={() => handleChartClick("cashflow")}
     >
       <CardHeader className="pb-2 pt-4 px-4">
         <div className="flex justify-between items-center">
@@ -71,8 +88,20 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
             <p className="text-[0.875rem] text-[#64748b]">{subtitle}</p>
           </div>
           <div className="flex space-x-2 space-x-reverse">
-            <Select defaultValue={period} onValueChange={setPeriod}>
-              <SelectTrigger className="w-[140px] h-9 border-[#e2e8f0]">
+            <Select
+              defaultValue={period}
+              onValueChange={setPeriod}
+              onOpenChange={(open) => {
+                if (open) {
+                  // منع انتشار الحدث عند فتح القائمة المنسدلة
+                  event?.stopPropagation();
+                }
+              }}
+            >
+              <SelectTrigger
+                className="w-[140px] h-9 border-[#e2e8f0]"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Calendar className="h-4 w-4 ml-2 text-[#64748b]" />
                 <SelectValue placeholder="الفترة" />
               </SelectTrigger>
@@ -87,17 +116,24 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-4">
-        <Tabs defaultValue="chart" className="w-full" onValueChange={setView}>
+        <Tabs
+          defaultValue="chart"
+          className="w-full"
+          onValueChange={setView}
+          onClick={(e) => e.stopPropagation()}
+        >
           <TabsList className="mb-4 bg-[#f8fafc]">
             <TabsTrigger
               value="chart"
               className="data-[state=active]:bg-white data-[state=active]:text-[#1e293b] data-[state=active]:shadow-sm text-[0.875rem]"
+              onClick={(e) => e.stopPropagation()}
             >
               رسم بياني
             </TabsTrigger>
             <TabsTrigger
               value="summary"
               className="data-[state=active]:bg-white data-[state=active]:text-[#1e293b] data-[state=active]:shadow-sm text-[0.875rem]"
+              onClick={(e) => e.stopPropagation()}
             >
               ملخص
             </TabsTrigger>
@@ -111,10 +147,14 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
                   <div
                     key={index}
                     className="flex flex-col items-center space-y-2 w-1/6"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBarClick(item.month);
+                    }}
                   >
                     <div className="w-full flex justify-center space-x-1 space-x-reverse">
                       {/* Income bar */}
-                      <div className="w-6 relative h-[180px] flex items-end">
+                      <div className="w-6 relative h-[180px] flex items-end cursor-pointer">
                         <div
                           className="w-full bg-[#10b981] rounded-t-sm absolute bottom-0"
                           style={{
@@ -123,7 +163,7 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
                         />
                       </div>
                       {/* Expenses bar */}
-                      <div className="w-6 relative h-[180px] flex items-end">
+                      <div className="w-6 relative h-[180px] flex items-end cursor-pointer">
                         <div
                           className="w-full bg-[#ef4444] rounded-t-sm absolute bottom-0"
                           style={{
@@ -159,7 +199,13 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
 
           <TabsContent value="summary">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#e2e8f0]">
+              <div
+                className="bg-[#f8fafc] p-4 rounded-lg border border-[#e2e8f0] cursor-pointer hover:bg-[#f1f5f9] transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChartClick("cashflow", "income");
+                }}
+              >
                 <div className="flex items-center">
                   <ArrowUpCircle className="h-8 w-8 text-[#10b981] ml-2" />
                   <div>
@@ -173,7 +219,13 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
                 </div>
               </div>
 
-              <div className="bg-[#f8fafc] p-4 rounded-lg border border-[#e2e8f0]">
+              <div
+                className="bg-[#f8fafc] p-4 rounded-lg border border-[#e2e8f0] cursor-pointer hover:bg-[#f1f5f9] transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChartClick("cashflow", "expenses");
+                }}
+              >
                 <div className="flex items-center">
                   <ArrowDownCircle className="h-8 w-8 text-[#ef4444] ml-2" />
                   <div>
@@ -189,11 +241,15 @@ const CashFlowChart: React.FC<CashFlowChartProps> = ({
 
               <div
                 className={cn(
-                  "p-4 rounded-lg border",
+                  "p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity",
                   isPositiveFlow
                     ? "bg-[#ecfdf5] border-[#d1fae5]"
                     : "bg-[#fef2f2] border-[#fee2e2]",
                 )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChartClick("cashflow", "net");
+                }}
               >
                 <div className="flex items-center">
                   {isPositiveFlow ? (

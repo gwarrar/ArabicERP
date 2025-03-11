@@ -87,12 +87,12 @@ import {
   XCircle,
   Layers,
   Cog,
-  Tool,
   Wrench,
   Gauge,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import ProductionOperationDetails from "./ProductionOperationDetails";
 
 // Sample operations data
 const operationsData = [
@@ -116,6 +116,11 @@ const operationsData = [
     completedAt: "2024-08-02 15:30",
     qualityCheck: "passed",
     nextOperation: "خياطة القميص القطني",
+    supervisor: "محمد علي",
+    plannedDuration: 8,
+    efficiency: 95,
+    targetRate: 12,
+    expectedEndDate: "2024-08-02",
   },
   {
     id: "OP-2024-002",
@@ -125,7 +130,7 @@ const operationsData = [
     workCenter: "قسم الخياطة",
     startDate: "2024-08-03",
     endDate: "2024-08-06",
-    status: "in-progress",
+    status: "قيد التنفيذ",
     progress: 65,
     assignedTo: "فريق الخياطة ب",
     priority: "عالية",
@@ -141,6 +146,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "تطريز القميص القطني",
+    supervisor: "سارة أحمد",
+    plannedDuration: 24,
+    efficiency: 92,
+    targetRate: 10,
+    expectedEndDate: "2024-08-06",
   },
   {
     id: "OP-2024-003",
@@ -150,7 +160,7 @@ const operationsData = [
     workCenter: "قسم التطريز",
     startDate: "2024-08-07",
     endDate: "2024-08-08",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     assignedTo: "فريق التطريز أ",
     priority: "عالية",
@@ -165,6 +175,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "كي القميص القطني",
+    supervisor: "محمد علي",
+    plannedDuration: 16,
+    efficiency: 0,
+    targetRate: 15,
+    expectedEndDate: "2024-08-08",
   },
   {
     id: "OP-2024-004",
@@ -174,7 +189,7 @@ const operationsData = [
     workCenter: "قسم الكي",
     startDate: "2024-08-09",
     endDate: "2024-08-10",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     assignedTo: "فريق الكي أ",
     priority: "عالية",
@@ -186,6 +201,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "تعبئة القميص القطني",
+    supervisor: "خالد العبدالله",
+    plannedDuration: 12,
+    efficiency: 0,
+    targetRate: 20,
+    expectedEndDate: "2024-08-10",
   },
   {
     id: "OP-2024-005",
@@ -195,7 +215,7 @@ const operationsData = [
     workCenter: "قسم التعبئة",
     startDate: "2024-08-11",
     endDate: "2024-08-12",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     assignedTo: "فريق التعبئة ب",
     priority: "عالية",
@@ -211,6 +231,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "",
+    supervisor: "أحمد محمد",
+    plannedDuration: 8,
+    efficiency: 0,
+    targetRate: 30,
+    expectedEndDate: "2024-08-12",
   },
   {
     id: "OP-2024-006",
@@ -220,7 +245,7 @@ const operationsData = [
     workCenter: "قسم القص",
     startDate: "2024-08-05",
     endDate: "2024-08-06",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     assignedTo: "فريق القص ب",
     priority: "متوسطة",
@@ -232,6 +257,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "خياطة بنطلون الجينز",
+    supervisor: "سارة أحمد",
+    plannedDuration: 10,
+    efficiency: 0,
+    targetRate: 15,
+    expectedEndDate: "2024-08-06",
   },
   {
     id: "OP-2024-007",
@@ -241,7 +271,7 @@ const operationsData = [
     workCenter: "قسم الخياطة",
     startDate: "2024-08-07",
     endDate: "2024-08-10",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     assignedTo: "فريق الخياطة أ",
     priority: "متوسطة",
@@ -258,6 +288,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "كي بنطلون الجينز",
+    supervisor: "محمد علي",
+    plannedDuration: 30,
+    efficiency: 0,
+    targetRate: 8,
+    expectedEndDate: "2024-08-10",
   },
   {
     id: "OP-2024-008",
@@ -267,7 +302,7 @@ const operationsData = [
     workCenter: "قسم التطريز",
     startDate: "2024-08-03",
     endDate: "2024-08-05",
-    status: "in-progress",
+    status: "قيد التنفيذ",
     progress: 30,
     assignedTo: "فريق التطريز ب",
     priority: "منخفضة",
@@ -282,6 +317,11 @@ const operationsData = [
     completedAt: "",
     qualityCheck: "pending",
     nextOperation: "كي البلوزة الحريرية",
+    supervisor: "فاطمة حسن",
+    plannedDuration: 20,
+    efficiency: 90,
+    targetRate: 8,
+    expectedEndDate: "2024-08-05",
   },
 ];
 
@@ -294,33 +334,10 @@ const workCentersData = [
   { id: "WC-005", name: "قسم التعبئة" },
 ];
 
-// Sample production orders data
-const productionOrdersData = [
-  { id: "PO-2024-001", name: "قميص قطني" },
-  { id: "PO-2024-002", name: "بنطلون جينز" },
-  { id: "PO-2024-003", name: "فستان صيفي" },
-  { id: "PO-2024-004", name: "بلوزة حريرية" },
-  { id: "PO-2024-005", name: "جاكيت شتوي" },
-];
-
-// Sample teams data
-const teamsData = [
-  { id: "TEAM-001", name: "فريق القص أ" },
-  { id: "TEAM-002", name: "فريق القص ب" },
-  { id: "TEAM-003", name: "فريق الخياطة أ" },
-  { id: "TEAM-004", name: "فريق الخياطة ب" },
-  { id: "TEAM-005", name: "فريق التطريز أ" },
-  { id: "TEAM-006", name: "فريق التطريز ب" },
-  { id: "TEAM-007", name: "فريق الكي أ" },
-  { id: "TEAM-008", name: "فريق التعبئة أ" },
-  { id: "TEAM-009", name: "فريق التعبئة ب" },
-];
-
 const ProductionOperations = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [workCenterFilter, setWorkCenterFilter] = useState("all");
-  const [orderFilter, setOrderFilter] = useState("all");
   const [showAddOperation, setShowAddOperation] = useState(false);
   const [showOperationDetails, setShowOperationDetails] = useState(false);
   const [selectedOperation, setSelectedOperation] = useState(null);
@@ -345,12 +362,7 @@ const ProductionOperations = () => {
       const matchesWorkCenter =
         workCenterFilter === "all" || operation.workCenter === workCenterFilter;
 
-      const matchesOrder =
-        orderFilter === "all" || operation.productionOrder === orderFilter;
-
-      return (
-        matchesSearch && matchesStatus && matchesWorkCenter && matchesOrder
-      );
+      return matchesSearch && matchesStatus && matchesWorkCenter;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -382,12 +394,16 @@ const ProductionOperations = () => {
   // Get status badge class
   const getStatusBadgeClass = (status) => {
     switch (status) {
+      case "مكتمل":
       case "completed":
         return "bg-green-100 text-green-800";
+      case "قيد التنفيذ":
       case "in-progress":
         return "bg-blue-100 text-blue-800";
+      case "قيد الانتظار":
       case "planned":
         return "bg-amber-100 text-amber-800";
+      case "متوقف":
       case "on-hold":
         return "bg-red-100 text-red-800";
       default:
@@ -399,13 +415,13 @@ const ProductionOperations = () => {
   const getStatusText = (status) => {
     switch (status) {
       case "completed":
-        return "مكتملة";
+        return "مكتمل";
       case "in-progress":
         return "قيد التنفيذ";
       case "planned":
-        return "مخططة";
+        return "قيد الانتظار";
       case "on-hold":
-        return "متوقفة";
+        return "متوقف";
       default:
         return status;
     }
@@ -428,12 +444,16 @@ const ProductionOperations = () => {
   // Get status icon
   const getStatusIcon = (status) => {
     switch (status) {
+      case "مكتمل":
       case "completed":
         return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case "قيد التنفيذ":
       case "in-progress":
         return <PlayCircle className="h-4 w-4 text-blue-600" />;
+      case "قيد الانتظار":
       case "planned":
         return <Clock className="h-4 w-4 text-amber-600" />;
+      case "متوقف":
       case "on-hold":
         return <PauseCircle className="h-4 w-4 text-red-600" />;
       default:
@@ -530,10 +550,10 @@ const ProductionOperations = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="completed">مكتملة</SelectItem>
-                <SelectItem value="in-progress">قيد التنفيذ</SelectItem>
-                <SelectItem value="planned">مخططة</SelectItem>
-                <SelectItem value="on-hold">متوقفة</SelectItem>
+                <SelectItem value="completed">مكتمل</SelectItem>
+                <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
+                <SelectItem value="قيد الانتظار">قيد الانتظار</SelectItem>
+                <SelectItem value="متوقف">متوقف</SelectItem>
               </SelectContent>
             </Select>
 
@@ -549,20 +569,6 @@ const ProductionOperations = () => {
                 {workCentersData.map((center) => (
                   <SelectItem key={center.id} value={center.name}>
                     {center.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={orderFilter} onValueChange={setOrderFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="أمر الإنتاج" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">جميع الأوامر</SelectItem>
-                {productionOrdersData.map((order) => (
-                  <SelectItem key={order.id} value={order.id}>
-                    {order.id} - {order.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -609,8 +615,11 @@ const ProductionOperations = () => {
                 </p>
                 <h3 className="text-2xl font-bold mt-2">
                   {
-                    operationsData.filter((op) => op.status === "in-progress")
-                      .length
+                    operationsData.filter(
+                      (op) =>
+                        op.status === "قيد التنفيذ" ||
+                        op.status === "in-progress",
+                    ).length
                   }
                 </h3>
               </div>
@@ -628,8 +637,10 @@ const ProductionOperations = () => {
                 <p className="text-sm text-muted-foreground">عمليات مكتملة</p>
                 <h3 className="text-2xl font-bold mt-2">
                   {
-                    operationsData.filter((op) => op.status === "completed")
-                      .length
+                    operationsData.filter(
+                      (op) =>
+                        op.status === "مكتمل" || op.status === "completed",
+                    ).length
                   }
                 </h3>
               </div>
@@ -647,8 +658,10 @@ const ProductionOperations = () => {
                 <p className="text-sm text-muted-foreground">عمليات مخططة</p>
                 <h3 className="text-2xl font-bold mt-2">
                   {
-                    operationsData.filter((op) => op.status === "planned")
-                      .length
+                    operationsData.filter(
+                      (op) =>
+                        op.status === "قيد الانتظار" || op.status === "planned",
+                    ).length
                   }
                 </h3>
               </div>
@@ -689,7 +702,7 @@ const ProductionOperations = () => {
         </CardHeader>
         <CardContent>
           <div className="border rounded-lg overflow-hidden">
-            <Table>
+            <Table dir="rtl">
               <TableHeader>
                 <TableRow>
                   <TableHead
@@ -741,7 +754,11 @@ const ProductionOperations = () => {
               <TableBody>
                 {filteredOperations.length > 0 ? (
                   filteredOperations.map((operation) => (
-                    <TableRow key={operation.id}>
+                    <TableRow
+                      key={operation.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleOperationSelect(operation)}
+                    >
                       <TableCell className="font-medium">
                         {operation.id}
                       </TableCell>
@@ -770,45 +787,55 @@ const ProductionOperations = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1">
+                        <div
+                          className="flex items-center gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleOperationSelect(operation)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOperationSelect(operation);
+                            }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          {operation.status === "planned" && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleStartOperation(operation.id)}
-                            >
-                              <Play className="h-4 w-4 text-blue-600" />
-                            </Button>
-                          )}
-                          {operation.status === "in-progress" && (
-                            <>
+                          {operation.status === "قيد الانتظار" ||
+                            (operation.status === "planned" && (
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() =>
-                                  handlePauseOperation(operation.id)
+                                  handleStartOperation(operation.id)
                                 }
                               >
-                                <Pause className="h-4 w-4 text-amber-600" />
+                                <Play className="h-4 w-4 text-blue-600" />
                               </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  handleCompleteOperation(operation.id)
-                                }
-                              >
-                                <CheckCircle className="h-4 w-4 text-green-600" />
-                              </Button>
-                            </>
-                          )}
+                            ))}
+                          {operation.status === "قيد التنفيذ" ||
+                            (operation.status === "in-progress" && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    handlePauseOperation(operation.id)
+                                  }
+                                >
+                                  <Pause className="h-4 w-4 text-amber-600" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    handleCompleteOperation(operation.id)
+                                  }
+                                >
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                </Button>
+                              </>
+                            ))}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -832,7 +859,6 @@ const ProductionOperations = () => {
                             setSearchQuery("");
                             setStatusFilter("all");
                             setWorkCenterFilter("all");
-                            setOrderFilter("all");
                           }}
                         >
                           إعادة تعيين المرشحات
@@ -864,13 +890,14 @@ const ProductionOperations = () => {
                 (op) => op.workCenter === center.name,
               );
               const activeOperations = centerOperations.filter(
-                (op) => op.status === "in-progress",
+                (op) =>
+                  op.status === "قيد التنفيذ" || op.status === "in-progress",
               );
               const plannedOperations = centerOperations.filter(
-                (op) => op.status === "planned",
+                (op) => op.status === "قيد الانتظار" || op.status === "planned",
               );
               const completedOperations = centerOperations.filter(
-                (op) => op.status === "completed",
+                (op) => op.status === "مكتمل" || op.status === "completed",
               );
               const utilizationPercentage =
                 activeOperations.length > 0 ? 100 : 0; // Simplified for demo
@@ -973,210 +1000,11 @@ const ProductionOperations = () => {
 
       {/* Operation Details Dialog */}
       {selectedOperation && (
-        <Dialog
+        <ProductionOperationDetails
           open={showOperationDetails}
-          onOpenChange={setShowOperationDetails}
-        >
-          <DialogContent className="sm:max-w-[700px]">
-            <DialogHeader>
-              <DialogTitle>تفاصيل العملية {selectedOperation.id}</DialogTitle>
-              <DialogDescription>
-                عرض تفاصيل العملية الإنتاجية والتقدم الحالي
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات أساسية
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">رقم العملية:</div>
-                    <div>{selectedOperation.id}</div>
-                    <div className="font-medium">اسم العملية:</div>
-                    <div>{selectedOperation.name}</div>
-                    <div className="font-medium">أمر الإنتاج:</div>
-                    <div>{selectedOperation.productionOrder}</div>
-                    <div className="font-medium">المنتج:</div>
-                    <div>{selectedOperation.product}</div>
-                    <div className="font-medium">مركز العمل:</div>
-                    <div>{selectedOperation.workCenter}</div>
-                    <div className="font-medium">الحالة:</div>
-                    <div>
-                      <Badge
-                        className={getStatusBadgeClass(
-                          selectedOperation.status,
-                        )}
-                      >
-                        {getStatusText(selectedOperation.status)}
-                      </Badge>
-                    </div>
-                    <div className="font-medium">الأولوية:</div>
-                    <div>
-                      <Badge
-                        className={getPriorityBadgeClass(
-                          selectedOperation.priority,
-                        )}
-                      >
-                        {selectedOperation.priority}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات الجدولة
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">تاريخ البدء:</div>
-                    <div>{formatDate(selectedOperation.startDate)}</div>
-                    <div className="font-medium">تاريخ الانتهاء المخطط:</div>
-                    <div>{formatDate(selectedOperation.endDate)}</div>
-                    <div className="font-medium">المدة المخططة:</div>
-                    <div>{selectedOperation.duration} ساعة</div>
-                    <div className="font-medium">المدة الفعلية:</div>
-                    <div>{selectedOperation.actualDuration} ساعة</div>
-                    <div className="font-medium">تم التعيين إلى:</div>
-                    <div>{selectedOperation.assignedTo}</div>
-                    {selectedOperation.completedBy && (
-                      <>
-                        <div className="font-medium">تم الإكمال بواسطة:</div>
-                        <div>{selectedOperation.completedBy}</div>
-                        <div className="font-medium">تاريخ الإكمال:</div>
-                        <div>{selectedOperation.completedAt}</div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    ملاحظات
-                  </h3>
-                  <div className="p-2 bg-gray-50 rounded border text-sm">
-                    {selectedOperation.notes || "لا توجد ملاحظات"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    التقدم
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>نسبة الإكمال:</span>
-                      <span>{selectedOperation.progress}%</span>
-                    </div>
-                    <Progress
-                      value={selectedOperation.progress}
-                      className="h-2"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    المواد المستخدمة
-                  </h3>
-                  <div className="border rounded-lg overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>المادة</TableHead>
-                          <TableHead>الكمية</TableHead>
-                          <TableHead>الوحدة</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selectedOperation.materials.map((material, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{material.name}</TableCell>
-                            <TableCell>{material.quantity}</TableCell>
-                            <TableCell>{material.unit}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات إضافية
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">فحص الجودة:</div>
-                    <div>
-                      {selectedOperation.qualityCheck === "passed" ? (
-                        <Badge className="bg-green-100 text-green-800">
-                          ناجح
-                        </Badge>
-                      ) : selectedOperation.qualityCheck === "failed" ? (
-                        <Badge className="bg-red-100 text-red-800">فاشل</Badge>
-                      ) : (
-                        <Badge className="bg-gray-100 text-gray-800">
-                          معلق
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="font-medium">العملية التالية:</div>
-                    <div>{selectedOperation.nextOperation || "-"}</div>
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <div className="flex gap-2 justify-end">
-                    {selectedOperation.status === "planned" && (
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          handleStartOperation(selectedOperation.id)
-                        }
-                      >
-                        <Play className="ml-1 h-3 w-3" />
-                        بدء العملية
-                      </Button>
-                    )}
-                    {selectedOperation.status === "in-progress" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            handlePauseOperation(selectedOperation.id)
-                          }
-                        >
-                          <Pause className="ml-1 h-3 w-3" />
-                          إيقاف مؤقت
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            handleCompleteOperation(selectedOperation.id)
-                          }
-                        >
-                          <CheckCircle className="ml-1 h-3 w-3" />
-                          إكمال
-                        </Button>
-                      </>
-                    )}
-                    <Button variant="outline">
-                      <Edit className="ml-1 h-3 w-3" />
-                      تعديل
-                    </Button>
-                    <Button variant="outline">
-                      <FileText className="ml-1 h-3 w-3" />
-                      تقرير
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+          onClose={() => setShowOperationDetails(false)}
+          operation={selectedOperation}
+        />
       )}
 
       {/* Add Operation Dialog */}
@@ -1206,11 +1034,21 @@ const ProductionOperations = () => {
                   <SelectValue placeholder="اختر أمر الإنتاج" />
                 </SelectTrigger>
                 <SelectContent>
-                  {productionOrdersData.map((order) => (
-                    <SelectItem key={order.id} value={order.id}>
-                      {order.id} - {order.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="PO-2024-001">
+                    PO-2024-001 (قميص قطني)
+                  </SelectItem>
+                  <SelectItem value="PO-2024-002">
+                    PO-2024-002 (بنطلون جينز)
+                  </SelectItem>
+                  <SelectItem value="PO-2024-003">
+                    PO-2024-003 (فستان صيفي)
+                  </SelectItem>
+                  <SelectItem value="PO-2024-004">
+                    PO-2024-004 (بلوزة حريرية)
+                  </SelectItem>
+                  <SelectItem value="PO-2024-005">
+                    PO-2024-005 (جاكيت شتوي)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1242,11 +1080,15 @@ const ProductionOperations = () => {
                   <SelectValue placeholder="اختر الفريق" />
                 </SelectTrigger>
                 <SelectContent>
-                  {teamsData.map((team) => (
-                    <SelectItem key={team.id} value={team.name}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="فريق القص أ">فريق القص أ</SelectItem>
+                  <SelectItem value="فريق القص ب">فريق القص ب</SelectItem>
+                  <SelectItem value="فريق الخياطة أ">فريق الخياطة أ</SelectItem>
+                  <SelectItem value="فريق الخياطة ب">فريق الخياطة ب</SelectItem>
+                  <SelectItem value="فريق التطريز أ">فريق التطريز أ</SelectItem>
+                  <SelectItem value="فريق التطريز ب">فريق التطريز ب</SelectItem>
+                  <SelectItem value="فريق الكي أ">فريق الكي أ</SelectItem>
+                  <SelectItem value="فريق التعبئة أ">فريق التعبئة أ</SelectItem>
+                  <SelectItem value="فريق التعبئة ب">فريق التعبئة ب</SelectItem>
                 </SelectContent>
               </Select>
             </div>

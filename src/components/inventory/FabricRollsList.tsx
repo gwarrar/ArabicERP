@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import FabricRollDetails from "./FabricRollDetails";
 import {
   Search,
   Plus,
@@ -301,8 +302,9 @@ const FabricRollsList = () => {
                     <div className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1 text-blue-500" />
                       <span>
-                        {roll.floorNumber}-{roll.aisleNumber}-
-                        {roll.sectionNumber}-{roll.shelfNumber}
+                        {roll && roll.floorNumber
+                          ? `${roll.floorNumber}-${roll.aisleNumber || "-"}-${roll.sectionNumber || "-"}-${roll.shelfNumber || "-"}`
+                          : "-"}
                       </span>
                     </div>
                   </TableCell>
@@ -341,119 +343,18 @@ const FabricRollsList = () => {
       </div>
 
       {/* تفاصيل الرولون */}
-      <Dialog open={showRollDetails} onOpenChange={setShowRollDetails}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>تفاصيل رولون القماش</DialogTitle>
-          </DialogHeader>
-          {selectedRoll && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    الرقم التسلسلي
-                  </p>
-                  <p className="font-medium">{selectedRoll.serialNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الباركود</p>
-                  <p className="font-medium">{selectedRoll.barcode}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الاسم</p>
-                  <p className="font-medium">{selectedRoll.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">النوع</p>
-                  <p className="font-medium">{selectedRoll.type}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">اللون</p>
-                  <p className="font-medium">{selectedRoll.color}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الوزن</p>
-                  <p className="font-medium">{selectedRoll.weight} كغ</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الطول</p>
-                  <p className="font-medium">{selectedRoll.length} م</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">العرض</p>
-                  <p className="font-medium">{selectedRoll.width} سم</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">المورد</p>
-                  <p className="font-medium">{selectedRoll.supplier}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    تاريخ الاستلام
-                  </p>
-                  <p className="font-medium">{selectedRoll.receivedDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الحالة</p>
-                  <span
-                    className={`px-2 py-1 text-xs ${getStatusClass(selectedRoll.status)} rounded-full`}
-                  >
-                    {getStatusText(selectedRoll.status)}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-md font-semibold mb-2">موقع التخزين</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">المستودع</p>
-                    <p className="font-medium">المستودع الرئيسي</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">الطابق</p>
-                    <p className="font-medium">{selectedRoll.floorNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">الممر</p>
-                    <p className="font-medium">{selectedRoll.aisleNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">القسم</p>
-                    <p className="font-medium">{selectedRoll.sectionNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">الرف</p>
-                    <p className="font-medium">{selectedRoll.shelfNumber}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowRollDetails(false)}
-                >
-                  إغلاق
-                </Button>
-                <Button variant="outline">
-                  <Edit className="ml-2 h-4 w-4" />
-                  تعديل
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowRollDetails(false);
-                    setShowQRCode(true);
-                  }}
-                >
-                  <QrCode className="ml-2 h-4 w-4" />
-                  طباعة الباركود
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {selectedRoll && (
+        <FabricRollDetails
+          open={showRollDetails}
+          onClose={() => setShowRollDetails(false)}
+          roll={selectedRoll}
+          onShowQRCode={(roll) => {
+            setShowRollDetails(false);
+            setSelectedRoll(roll);
+            setShowQRCode(true);
+          }}
+        />
+      )}
 
       {/* عرض الباركود */}
       <Dialog open={showQRCode} onOpenChange={setShowQRCode}>

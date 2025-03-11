@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ExchangeRateFloatingWidget from "../dashboard/ExchangeRateFloatingWidget";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -36,6 +37,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {children}
             </div>
           </main>
+          <ExchangeRateFloatingWidget />
         </div>
       </div>
     </ErrorBoundary>
