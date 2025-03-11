@@ -18,6 +18,7 @@ import {
   Euro,
   TrendingUp,
   TrendingDown,
+  GitBranch,
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -122,6 +123,12 @@ const Sidebar = () => {
           label="الموارد البشرية"
           href="/hr"
           active={isActive("/hr")}
+        />
+        <SidebarItem
+          icon={<GitBranch className="h-5 w-5" />}
+          label="سير العمل والأتمتة"
+          href="/workflow"
+          active={isActive("/workflow")}
         />
         <SidebarItem
           icon={<Calendar className="h-5 w-5" />}

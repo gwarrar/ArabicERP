@@ -17,6 +17,10 @@ import HRPerformance from "./pages/hr/performance";
 import HRAttendance from "./pages/hr/attendance";
 import HRPerformanceTable from "./pages/hr/performance-table";
 import SaaSAdminPage from "./pages/saas-admin";
+import WorkflowPage from "./pages/workflow";
+import WorkflowDesignerPage from "./pages/workflow/designer";
+import WorkflowEnginePage from "./pages/workflow/engine";
+import WorkflowIntegrationPage from "./pages/workflow/integration";
 import routes from "tempo-routes";
 
 function App() {
@@ -49,6 +53,13 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Help />} />
           <Route path="/saas-admin" element={<SaaSAdminPage />} />
+          <Route path="/workflow" element={<WorkflowPage />} />
+          <Route path="/workflow/designer" element={<WorkflowDesignerPage />} />
+          <Route path="/workflow/engine" element={<WorkflowEnginePage />} />
+          <Route
+            path="/workflow/integration"
+            element={<WorkflowIntegrationPage />}
+          />
           {import.meta.env.VITE_TEMPO === "true" && (
             <Route path="/tempobook/*" element={<div />} />
           )}
