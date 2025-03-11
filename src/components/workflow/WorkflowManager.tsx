@@ -282,34 +282,13 @@ const WorkflowManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">إدارة سير العمل والأتمتة</h2>
+          <h3 className="text-xl font-bold">إدارة سير العمل</h3>
           <p className="text-muted-foreground">
             إنشاء وإدارة سير العمل وأتمتة العمليات التجارية
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => (window.location.href = "/workflow/dashboard")}
-          >
-            <BarChart2 className="ml-2 h-4 w-4" />
-            لوحة المتابعة
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => (window.location.href = "/workflow/engine")}
-          >
-            <Play className="ml-2 h-4 w-4" />
-            محرك سير العمل
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => (window.location.href = "/workflow/integration")}
-          >
-            <LinkIcon className="ml-2 h-4 w-4" />
-            التكامل
-          </Button>
-          <Button onClick={() => (window.location.href = "/workflow/designer")}>
+        <div>
+          <Button>
             <Plus className="ml-2 h-4 w-4" />
             إنشاء سير عمل جديد
           </Button>

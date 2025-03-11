@@ -563,7 +563,7 @@ const WorkflowDesigner = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">مصمم سير العمل</h2>
+          <h3 className="text-xl font-bold">مصمم سير العمل</h3>
           <p className="text-muted-foreground">
             تصميم وتكوين سير العمل بشكل مرئي
           </p>

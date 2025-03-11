@@ -575,7 +575,7 @@ const WorkflowEngine = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">محرك سير العمل</h2>
+          <h3 className="text-xl font-bold">محرك سير العمل</h3>
           <p className="text-muted-foreground">
             متابعة وإدارة حالات سير العمل النشطة
           </p>

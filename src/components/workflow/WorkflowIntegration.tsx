@@ -15,7 +15,7 @@ const WorkflowIntegration = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">تكامل سير العمل</h2>
+          <h3 className="text-xl font-bold">تكامل سير العمل</h3>
           <p className="text-muted-foreground">
             ربط سير العمل مع وحدات النظام المختلفة
           </p>
