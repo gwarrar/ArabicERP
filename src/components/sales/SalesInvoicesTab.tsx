@@ -37,11 +37,13 @@ import {
   CheckCircle,
   AlertCircle,
   MoreHorizontal,
+  Tag,
 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/utils/formatters";
 import StatusBadge from "../shared/StatusBadge";
 import SalesInvoice from "./SalesInvoice";
 import SalesInvoiceDetails from "./SalesInvoiceDetails";
+import SalesInvoiceWithRFID from "./SalesInvoiceWithRFID";
 
 // Sample sales data
 const salesData = [
@@ -180,10 +182,19 @@ const SalesInvoicesTab = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">فواتير المبيعات</h2>
-        <Button onClick={() => setShowNewInvoice(true)}>
-          <Plus className="ml-2 h-4 w-4" />
-          فاتورة جديدة
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowNewInvoice(true)}>
+            <Plus className="ml-2 h-4 w-4" />
+            فاتورة جديدة
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = "#/sales/invoice-rfid")}
+          >
+            <Tag className="ml-2 h-4 w-4" />
+            فاتورة مع RFID
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}

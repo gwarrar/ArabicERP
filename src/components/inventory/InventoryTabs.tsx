@@ -18,6 +18,7 @@ const EnhancedWarehouseMap = lazy(() => import("./EnhancedWarehouseMap"));
 const RFIDIntegrationSettings = lazy(() => import("./RFIDIntegrationSettings"));
 const RFIDTagManagement = lazy(() => import("./RFIDTagManagement"));
 const RFIDDashboard = lazy(() => import("./RFIDDashboard"));
+const RFIDReports = lazy(() => import("./RFIDReports"));
 import {
   BarChart3,
   FileText,
@@ -35,6 +36,7 @@ import {
   Settings,
   Tag,
   LayoutDashboard,
+  BarChart,
 } from "lucide-react";
 
 // Loading skeleton for tab content
@@ -108,6 +110,10 @@ const InventoryTabs = () => {
           <TabsTrigger value="rfid-tags" className="rounded-md m-1">
             <Tag className="h-4 w-4 ml-2" />
             تاجات RFID
+          </TabsTrigger>
+          <TabsTrigger value="rfid-reports" className="rounded-md m-1">
+            <BarChart className="h-4 w-4 ml-2" />
+            تقارير RFID
           </TabsTrigger>
           <TabsTrigger value="rfid-settings" className="rounded-md m-1">
             <Smartphone className="h-4 w-4 ml-2" />
@@ -191,6 +197,12 @@ const InventoryTabs = () => {
       <TabsContent value="rfid-tags">
         <Suspense fallback={<LoadingSkeleton />}>
           <RFIDTagManagement />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="rfid-reports">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <RFIDReports />
         </Suspense>
       </TabsContent>
 
