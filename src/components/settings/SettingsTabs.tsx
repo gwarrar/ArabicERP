@@ -3,7 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UISettings from "./UISettings";
 import UserManagement from "./UserManagement";
 import IntegrationSettings from "./IntegrationSettings";
-// import SimplePrintTemplates from "./SimplePrintTemplates";
+import PrintTemplates from "./PrintTemplates";
+import LocalizationSettings from "./LocalizationSettings";
+import DatabaseSettings from "./DatabaseSettings";
 import {
   Palette,
   Users,
@@ -66,17 +68,11 @@ const SettingsTabs = () => {
       </TabsContent>
 
       <TabsContent value="localization">
-        <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <h2 className="text-xl font-bold mb-4">الإعدادات المحلية</h2>
-          <p className="text-muted-foreground mb-4">قريباً...</p>
-        </div>
+        <LocalizationSettings />
       </TabsContent>
 
       <TabsContent value="database">
-        <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <h2 className="text-xl font-bold mb-4">إعدادات قاعدة البيانات</h2>
-          <p className="text-muted-foreground mb-4">قريباً...</p>
-        </div>
+        <DatabaseSettings />
       </TabsContent>
 
       <TabsContent value="notifications">
@@ -94,10 +90,7 @@ const SettingsTabs = () => {
       </TabsContent>
 
       <TabsContent value="print">
-        <div className="bg-white p-6 rounded-lg border shadow-sm">
-          <h2 className="text-xl font-bold mb-4">إعدادات الطباعة</h2>
-          <p className="text-muted-foreground mb-4">قريباً...</p>
-        </div>
+        <PrintTemplates />
       </TabsContent>
     </Tabs>
   );
