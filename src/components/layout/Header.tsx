@@ -161,9 +161,6 @@ const Header = ({
                   "https://api.dicebear.com/7.x/shapes/svg?seed=erp-system";
               }}
             />
-            <h1 className="text-[1.25rem] font-bold text-[#1e293b] mr-3">
-              نظام ERP المتكامل
-            </h1>
           </div>
 
           {/* Search Bar */}

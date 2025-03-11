@@ -13,6 +13,11 @@ const InventoryReports = lazy(() => import("./InventoryReports"));
 const FabricRollsList = lazy(() => import("./FabricRollsList"));
 const WarehouseMap = lazy(() => import("./WarehouseMap"));
 const ReceiveMaterials = lazy(() => import("./ReceiveMaterials"));
+const InventoryCount = lazy(() => import("./InventoryCount"));
+const EnhancedWarehouseMap = lazy(() => import("./EnhancedWarehouseMap"));
+const RFIDIntegrationSettings = lazy(() => import("./RFIDIntegrationSettings"));
+const RFIDTagManagement = lazy(() => import("./RFIDTagManagement"));
+const RFIDDashboard = lazy(() => import("./RFIDDashboard"));
 import {
   BarChart3,
   FileText,
@@ -25,6 +30,11 @@ import {
   Map,
   Truck,
   BoxesIcon,
+  Clipboard,
+  Smartphone,
+  Settings,
+  Tag,
+  LayoutDashboard,
 } from "lucide-react";
 
 // Loading skeleton for tab content
@@ -45,44 +55,66 @@ const LoadingSkeleton = () => {
 const InventoryTabs = () => {
   return (
     <Tabs defaultValue="dashboard" className="w-full" dir="rtl">
-      <TabsList className="mb-4">
-        <TabsTrigger value="dashboard">
-          <BarChart3 className="h-4 w-4 ml-2" />
-          لوحة التحكم
-        </TabsTrigger>
-        <TabsTrigger value="warehouses">
-          <Warehouse className="h-4 w-4 ml-2" />
-          المستودعات
-        </TabsTrigger>
-        <TabsTrigger value="warehouse-map">
-          <Map className="h-4 w-4 ml-2" />
-          خريطة المستودع
-        </TabsTrigger>
-        <TabsTrigger value="receive-materials">
-          <Truck className="h-4 w-4 ml-2" />
-          استلام المواد
-        </TabsTrigger>
-        <TabsTrigger value="categories">
-          <FolderTree className="h-4 w-4 ml-2" />
-          مجموعات المنتجات
-        </TabsTrigger>
-        <TabsTrigger value="products">
-          <Package className="h-4 w-4 ml-2" />
-          المنتجات
-        </TabsTrigger>
-        <TabsTrigger value="fabric-rolls">
-          <QrCode className="h-4 w-4 ml-2" />
-          رولونات القماش
-        </TabsTrigger>
-        <TabsTrigger value="movements">
-          <ArrowRightLeft className="h-4 w-4 ml-2" />
-          حركة المخزون
-        </TabsTrigger>
-        <TabsTrigger value="reports">
-          <FileText className="h-4 w-4 ml-2" />
-          التقارير
-        </TabsTrigger>
-      </TabsList>
+      <div className="border-b mb-6">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto flex-wrap h-auto p-0">
+          <TabsTrigger value="dashboard" className="rounded-md m-1">
+            <BarChart3 className="h-4 w-4 ml-2" />
+            لوحة التحكم
+          </TabsTrigger>
+          <TabsTrigger value="warehouses" className="rounded-md m-1">
+            <Warehouse className="h-4 w-4 ml-2" />
+            المستودعات
+          </TabsTrigger>
+          <TabsTrigger value="warehouse-map" className="rounded-md m-1">
+            <Map className="h-4 w-4 ml-2" />
+            خريطة المستودع
+          </TabsTrigger>
+          <TabsTrigger value="enhanced-map" className="rounded-md m-1">
+            <Map className="h-4 w-4 ml-2" />
+            خريطة تفاعلية
+          </TabsTrigger>
+          <TabsTrigger value="inventory-count" className="rounded-md m-1">
+            <Clipboard className="h-4 w-4 ml-2" />
+            الجرد
+          </TabsTrigger>
+          <TabsTrigger value="receive-materials" className="rounded-md m-1">
+            <Truck className="h-4 w-4 ml-2" />
+            استلام المواد
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="rounded-md m-1">
+            <FolderTree className="h-4 w-4 ml-2" />
+            مجموعات المنتجات
+          </TabsTrigger>
+          <TabsTrigger value="products" className="rounded-md m-1">
+            <Package className="h-4 w-4 ml-2" />
+            المنتجات
+          </TabsTrigger>
+          <TabsTrigger value="fabric-rolls" className="rounded-md m-1">
+            <QrCode className="h-4 w-4 ml-2" />
+            رولونات القماش
+          </TabsTrigger>
+          <TabsTrigger value="movements" className="rounded-md m-1">
+            <ArrowRightLeft className="h-4 w-4 ml-2" />
+            حركة المخزون
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="rounded-md m-1">
+            <FileText className="h-4 w-4 ml-2" />
+            التقارير
+          </TabsTrigger>
+          <TabsTrigger value="rfid-dashboard" className="rounded-md m-1">
+            <LayoutDashboard className="h-4 w-4 ml-2" />
+            لوحة RFID
+          </TabsTrigger>
+          <TabsTrigger value="rfid-tags" className="rounded-md m-1">
+            <Tag className="h-4 w-4 ml-2" />
+            تاجات RFID
+          </TabsTrigger>
+          <TabsTrigger value="rfid-settings" className="rounded-md m-1">
+            <Smartphone className="h-4 w-4 ml-2" />
+            إعدادات RFID
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="dashboard">
         <Suspense fallback={<LoadingSkeleton />}>
@@ -99,6 +131,18 @@ const InventoryTabs = () => {
       <TabsContent value="warehouse-map">
         <Suspense fallback={<LoadingSkeleton />}>
           <WarehouseMap />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="enhanced-map">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <EnhancedWarehouseMap />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="inventory-count">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <InventoryCount />
         </Suspense>
       </TabsContent>
 
@@ -135,6 +179,24 @@ const InventoryTabs = () => {
       <TabsContent value="reports">
         <Suspense fallback={<LoadingSkeleton />}>
           <InventoryReports />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="rfid-dashboard">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <RFIDDashboard />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="rfid-tags">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <RFIDTagManagement />
+        </Suspense>
+      </TabsContent>
+
+      <TabsContent value="rfid-settings">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <RFIDIntegrationSettings />
         </Suspense>
       </TabsContent>
     </Tabs>

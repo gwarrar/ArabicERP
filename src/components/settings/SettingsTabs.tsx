@@ -6,6 +6,7 @@ import IntegrationSettings from "./IntegrationSettings";
 import PrintTemplates from "./PrintTemplates";
 import LocalizationSettings from "./LocalizationSettings";
 import DatabaseSettings from "./DatabaseSettings";
+import DatabaseSetup from "./DatabaseSetup";
 import {
   Palette,
   Users,
@@ -15,6 +16,7 @@ import {
   Bell,
   Shield,
   Printer,
+  Server,
 } from "lucide-react";
 
 const SettingsTabs = () => {
@@ -40,6 +42,10 @@ const SettingsTabs = () => {
         <TabsTrigger value="database">
           <Database className="h-4 w-4 ml-2" />
           قاعدة البيانات
+        </TabsTrigger>
+        <TabsTrigger value="database-setup">
+          <Server className="h-4 w-4 ml-2" />
+          إعداد قاعدة البيانات
         </TabsTrigger>
         <TabsTrigger value="notifications">
           <Bell className="h-4 w-4 ml-2" />
@@ -73,6 +79,10 @@ const SettingsTabs = () => {
 
       <TabsContent value="database">
         <DatabaseSettings />
+      </TabsContent>
+
+      <TabsContent value="database-setup">
+        <DatabaseSetup />
       </TabsContent>
 
       <TabsContent value="notifications">

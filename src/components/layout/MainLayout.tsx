@@ -33,7 +33,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               sidebarCollapsed ? "mr-[70px]" : "mr-[280px]",
             )}
           >
-            <div className="w-[1232px] mx-auto bg-white rounded-lg shadow-sm p-6">
+            <div className="w-full max-w-[1232px] mx-auto bg-white rounded-lg shadow-sm p-6">
               {children}
             </div>
           </main>

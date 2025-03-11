@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CRMDashboard from "./CRMDashboard";
 import CustomerList from "./CustomerList";
+import CustomersList from "./CustomersList";
 import OpportunityPipeline from "./OpportunityPipeline";
 import ActivityLog from "./ActivityLog";
 import CRMReports from "./CRMReports";
@@ -13,6 +14,7 @@ import {
   BarChart3,
   Phone,
   FileText,
+  Database,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -27,6 +29,10 @@ const CRMTabs = () => {
         <TabsTrigger value="customers">
           <Users className="h-4 w-4 ml-2" />
           العملاء
+        </TabsTrigger>
+        <TabsTrigger value="customers-db">
+          <Database className="h-4 w-4 ml-2" />
+          العملاء (قاعدة البيانات)
         </TabsTrigger>
         <TabsTrigger value="opportunities">
           <Target className="h-4 w-4 ml-2" />
@@ -56,6 +62,10 @@ const CRMTabs = () => {
 
       <TabsContent value="customers">
         <CustomerList />
+      </TabsContent>
+
+      <TabsContent value="customers-db">
+        <CustomersList />
       </TabsContent>
 
       <TabsContent value="opportunities">
