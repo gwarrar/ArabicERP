@@ -128,6 +128,8 @@ import {
   Deglycosylation,
   Dealkylation,
   Deacylation,
+  ShoppingCart,
+  ArrowRightLeft,
 } from "lucide-react";
 import {
   BarChart,
@@ -146,6 +148,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import ManufacturingQuickLinks from "./ManufacturingQuickLinks";
 
 // Sample production orders data
 const productionOrdersData = [
@@ -435,6 +438,63 @@ const workCenterUtilizationData = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 const ManufacturingDashboard = () => {
+  // Handlers for quick links
+  const handleOpenProductionOrder = () => {
+    // Navigate to production-orders tab
+    document
+      .querySelector('[value="production-orders"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenBOM = () => {
+    // Navigate to bom tab
+    document
+      .querySelector('[value="bom"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenWorkCenters = () => {
+    // Navigate to work-centers tab
+    document
+      .querySelector('[value="work-centers"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenOperations = () => {
+    // Navigate to operations tab
+    document
+      .querySelector('[value="operations"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenPlanning = () => {
+    // Navigate to planning tab
+    document
+      .querySelector('[value="planning"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenMRP = () => {
+    // Navigate to mrp tab
+    document
+      .querySelector('[value="mrp"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenInventory = () => {
+    // Navigate to inventory tab
+    document
+      .querySelector('[value="inventory"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenPerformance = () => {
+    // Navigate to performance tab
+    document
+      .querySelector('[value="performance"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
@@ -485,6 +545,18 @@ const ManufacturingDashboard = () => {
           </Card>
         ))}
       </div>
+
+      {/* Quick Links Section */}
+      <ManufacturingQuickLinks
+        onOpenProductionOrder={handleOpenProductionOrder}
+        onOpenBOM={handleOpenBOM}
+        onOpenWorkCenters={handleOpenWorkCenters}
+        onOpenOperations={handleOpenOperations}
+        onOpenPlanning={handleOpenPlanning}
+        onOpenMRP={handleOpenMRP}
+        onOpenInventory={handleOpenInventory}
+        onOpenPerformance={handleOpenPerformance}
+      />
 
       {/* Production Performance Summary */}
       <Card>

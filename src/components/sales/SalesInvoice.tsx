@@ -35,10 +35,11 @@ import {
 import { customers } from "@/data/salesData";
 import { products } from "@/data/products";
 import { ukrainianBranches } from "@/data/branches";
-import { ProductSearch } from "./ProductSearch";
+import EnhancedProductSearch from "./EnhancedProductSearch";
 
 interface SalesInvoiceProps {
   onSave: () => void;
+  invoiceType?: "sales" | "reservation" | "quote";
 }
 
 interface InvoiceItem {
@@ -51,7 +52,11 @@ interface InvoiceItem {
   total: number;
 }
 
-export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
+export const SalesInvoice: React.FC<SalesInvoiceProps> = ({
+  onSave,
+  invoiceType: initialInvoiceType = "sales",
+}) => {
+  const [invoiceType, setInvoiceType] = useState(initialInvoiceType);
   const [invoiceNumber, setInvoiceNumber] = useState("INV-2024-0001");
   const [invoiceDate, setInvoiceDate] = useState(
     new Date().toISOString().split("T")[0],
@@ -65,20 +70,24 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
   const [customer, setCustomer] = useState("cash-customer");
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [showProductSearch, setShowProductSearch] = useState(false);
+  const [reservationDays, setReservationDays] = useState(7);
+  const [reservationEndDate, setReservationEndDate] = useState(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  );
 
-  // Add product to invoice
-  const addProduct = (product: any) => {
-    const newItem: InvoiceItem = {
-      id: Date.now().toString(),
+  // Add multiple products to invoice
+  const addProducts = (products: any[]) => {
+    const newItems = products.map((product) => ({
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       product,
       quantity: 1,
       price: product.price,
       discount: 0,
       tax: product.price * 0.15, // 15% tax
       total: product.price * 1.15, // Price + tax
-    };
+    }));
 
-    setItems([...items, newItem]);
+    setItems([...items, ...newItems]);
     setShowProductSearch(false);
   };
 
@@ -175,27 +184,56 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
       totalDiscount,
       totalTax,
       total,
+      invoiceType,
+      ...((invoiceType === "reservation" || invoiceType === "quote") && {
+        reservationDays,
+        reservationEndDate,
+      }),
     });
     onSave();
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4 pb-16">
+      {" "}
+      {/* Added padding to bottom to ensure content doesn't get hidden behind sticky footer */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">
+          {invoiceType === "sales"
+            ? "فاتورة مبيعات"
+            : invoiceType === "reservation"
+              ? "فاتورة حجز بضائع"
+              : "عرض سعر"}
+        </h2>
+        <div className="w-64">
+          <Select value={invoiceType} onValueChange={setInvoiceType}>
+            <SelectTrigger>
+              <SelectValue placeholder="اختر نوع الفاتورة" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sales">فاتورة مبيعات</SelectItem>
+              <SelectItem value="reservation">فاتورة حجز بضائع</SelectItem>
+              <SelectItem value="quote">عرض سعر</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Invoice Details */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
               <label className="text-sm font-medium">رقم الفاتورة</label>
               <Input
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value)}
+                className="h-9"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label className="text-sm font-medium">المستودع</label>
               <Select value={warehouse} onValueChange={setWarehouse}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="اختر المستودع" />
                 </SelectTrigger>
                 <SelectContent>
@@ -215,38 +253,40 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
               <label className="text-sm font-medium">تاريخ الفاتورة</label>
               <div className="relative">
                 <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="date"
-                  className="pr-10"
+                  className="pr-10 h-9"
                   value={invoiceDate}
                   onChange={(e) => setInvoiceDate(e.target.value)}
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">تاريخ الاستحقاق</label>
-              <div className="relative">
-                <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="date"
-                  className="pr-10"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                />
+            {paymentMethod !== "cash" && (
+              <div className="space-y-1">
+                <label className="text-sm font-medium">تاريخ الاستحقاق</label>
+                <div className="relative">
+                  <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="date"
+                    className="pr-10 h-9"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
               <label className="text-sm font-medium">طريقة الدفع</label>
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="اختر طريقة الدفع" />
                 </SelectTrigger>
                 <SelectContent>
@@ -257,15 +297,143 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label className="text-sm font-medium">ملاحظات</label>
               <Input
                 placeholder="ملاحظات الفاتورة"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                className="h-9"
               />
             </div>
           </div>
+
+          {invoiceType === "quote" && (
+            <div className="space-y-2 bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <h3 className="font-medium text-blue-800 text-sm">
+                معلومات عرض السعر
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">
+                    مدة صلاحية العرض (أيام)
+                  </label>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="h-8 text-sm"
+                    value={reservationDays}
+                    onChange={(e) => {
+                      const days = parseInt(e.target.value) || 1;
+                      setReservationDays(days);
+                      // Update end date based on days
+                      const endDate = new Date(
+                        new Date(invoiceDate).getTime() +
+                          days * 24 * 60 * 60 * 1000,
+                      );
+                      setReservationEndDate(
+                        endDate.toISOString().split("T")[0],
+                      );
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">
+                    تاريخ انتهاء الصلاحية
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute right-3 top-2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="date"
+                      className="pr-10 h-8 text-sm"
+                      value={reservationEndDate}
+                      onChange={(e) => {
+                        setReservationEndDate(e.target.value);
+                        // Calculate days based on end date
+                        const startDate = new Date(invoiceDate);
+                        const endDate = new Date(e.target.value);
+                        const diffTime = Math.abs(
+                          endDate.getTime() - startDate.getTime(),
+                        );
+                        const diffDays = Math.ceil(
+                          diffTime / (1000 * 60 * 60 * 24),
+                        );
+                        setReservationDays(diffDays);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-blue-600">
+                هذا عرض سعر فقط ولا يؤثر على المخزون. صالح لمدة{" "}
+                {reservationDays} يوم من تاريخ الإصدار.
+              </p>
+            </div>
+          )}
+
+          {invoiceType === "reservation" && (
+            <div className="space-y-2 bg-amber-50 p-3 rounded-lg border border-amber-200">
+              <h3 className="font-medium text-amber-800 text-sm">
+                تفاصيل الحجز
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">
+                    مدة الحجز (أيام)
+                  </label>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="h-8 text-sm"
+                    value={reservationDays}
+                    onChange={(e) => {
+                      const days = parseInt(e.target.value) || 1;
+                      setReservationDays(days);
+                      // Update end date based on days
+                      const endDate = new Date(
+                        new Date(invoiceDate).getTime() +
+                          days * 24 * 60 * 60 * 1000,
+                      );
+                      setReservationEndDate(
+                        endDate.toISOString().split("T")[0],
+                      );
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium">
+                    تاريخ انتهاء الحجز
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute right-3 top-2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="date"
+                      className="pr-10 h-8 text-sm"
+                      value={reservationEndDate}
+                      onChange={(e) => {
+                        setReservationEndDate(e.target.value);
+                        // Calculate days based on end date
+                        const startDate = new Date(invoiceDate);
+                        const endDate = new Date(e.target.value);
+                        const diffTime = Math.abs(
+                          endDate.getTime() - startDate.getTime(),
+                        );
+                        const diffDays = Math.ceil(
+                          diffTime / (1000 * 60 * 60 * 24),
+                        );
+                        setReservationDays(diffDays);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-amber-600">
+                سيتم حجز البضائع للعميل لمدة {reservationDays} يوم من تاريخ
+                الفاتورة. يمكن تحويل هذا الحجز إلى فاتورة مبيعات في أي وقت خلال
+                فترة الحجز.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Customer Details */}
@@ -274,7 +442,7 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
             <h3 className="font-medium">بيانات العميل</h3>
             <div className="flex gap-2">
               <Select value={customer} onValueChange={setCustomer}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[180px] h-9">
                   <SelectValue placeholder="اختر العميل" />
                 </SelectTrigger>
                 <SelectContent>
@@ -332,7 +500,6 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
           </div>
         </div>
       </div>
-
       {/* Invoice Items */}
       <div>
         <div className="flex justify-between items-center mb-4">
@@ -343,9 +510,12 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
           </Button>
         </div>
 
-        <div className="border rounded-lg overflow-hidden">
+        <div
+          className="border rounded-lg overflow-hidden"
+          style={{ maxHeight: "300px", overflowY: "auto" }}
+        >
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow>
                 <TableHead className="w-[50px] text-center">#</TableHead>
                 <TableHead>المنتج</TableHead>
@@ -436,7 +606,6 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
           </Table>
         </div>
       </div>
-
       {/* Invoice Summary */}
       <div className="flex justify-end">
         <div className="w-full md:w-1/3 space-y-2">
@@ -458,26 +627,45 @@ export const SalesInvoice: React.FC<SalesInvoiceProps> = ({ onSave }) => {
           </div>
         </div>
       </div>
-
       {/* Action Buttons */}
-      <div className="flex justify-end gap-2">
-        <Button variant="outline">
-          <Printer className="ml-2 h-4 w-4" />
-          طباعة
-        </Button>
-        <Button onClick={saveInvoice}>
-          <Save className="ml-2 h-4 w-4" />
-          حفظ
-        </Button>
+      <div className="flex justify-between gap-2 fixed bottom-0 left-0 right-0 bg-white py-2 border-t px-4 z-20">
+        <div>
+          {invoiceType === "reservation" && (
+            <div className="bg-amber-50 px-3 py-1 rounded-lg border border-amber-200 inline-block">
+              <span className="text-amber-800 font-medium text-sm">
+                حجز البضائع لمدة: {reservationDays} يوم
+              </span>
+            </div>
+          )}
+          {invoiceType === "quote" && (
+            <div className="bg-blue-50 px-3 py-1 rounded-lg border border-blue-200 inline-block">
+              <span className="text-blue-800 font-medium text-sm">
+                عرض سعر صالح لمدة: {reservationDays} يوم
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            <Printer className="ml-2 h-4 w-4" />
+            طباعة
+          </Button>
+          <Button onClick={saveInvoice} size="sm">
+            <Save className="ml-2 h-4 w-4" />
+            حفظ
+          </Button>
+        </div>
       </div>
-
-      {/* Product Search Dialog */}
+      {/* Enhanced Product Search Dialog */}
       <Dialog open={showProductSearch} onOpenChange={setShowProductSearch}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
-            <DialogTitle>إضافة منتج</DialogTitle>
+            <DialogTitle>إضافة منتجات متعددة</DialogTitle>
           </DialogHeader>
-          <ProductSearch onSelect={addProduct} />
+          <EnhancedProductSearch
+            onSelect={addProducts}
+            onCancel={() => setShowProductSearch(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>

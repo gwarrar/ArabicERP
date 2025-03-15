@@ -15,6 +15,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Search,
@@ -26,6 +28,8 @@ import {
   MoreHorizontal,
   MapPin,
   Calendar,
+  FileInput,
+  AlertCircle,
 } from "lucide-react";
 import { ukrainianBranches } from "@/data/branches";
 import PurchaseOrderForm from "./PurchaseOrderForm";
@@ -37,9 +41,11 @@ const PurchaseOrdersList = () => {
   const [showNewOrderDialog, setShowNewOrderDialog] = useState(false);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [showConvertDialog, setShowConvertDialog] = useState(false);
+  const [convertingOrder, setConvertingOrder] = useState<any>(null);
 
   // Sample purchase orders data
-  const purchaseOrders = [
+  const [purchaseOrders, setPurchaseOrders] = useState([
     {
       id: "PO-2024-0125",
       supplier: "شركة الأمل للتوريدات",
@@ -105,7 +111,7 @@ const PurchaseOrdersList = () => {
         { product: "مواد خام د", quantity: 200, price: 50, total: 10000 },
       ],
     },
-  ];
+  ]);
 
   // Filter orders based on search term, branch, and status
   const filteredOrders = purchaseOrders.filter((order) => {
@@ -142,6 +148,8 @@ const PurchaseOrdersList = () => {
         return "مستلم بالكامل";
       case "cancelled":
         return "ملغي";
+      case "invoiced":
+        return "تم إصدار فاتورة";
       default:
         return status;
     }
@@ -161,9 +169,49 @@ const PurchaseOrdersList = () => {
         return "bg-indigo-100 text-indigo-800";
       case "cancelled":
         return "bg-red-100 text-red-800";
+      case "invoiced":
+        return "bg-cyan-100 text-cyan-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  // تحويل طلبية الشراء إلى فاتورة مشتريات
+  const handleConvertToInvoice = (order: any) => {
+    setConvertingOrder(order);
+    setShowConvertDialog(true);
+  };
+
+  // تأكيد تحويل طلبية الشراء إلى فاتورة مشتريات
+  const confirmConvertToInvoice = () => {
+    if (!convertingOrder) return;
+
+    // تحديث حالة طلبية الشراء إلى "تم إصدار فاتورة"
+    const updatedOrders = purchaseOrders.map((order) => {
+      if (order.id === convertingOrder.id) {
+        return {
+          ...order,
+          status: "invoiced",
+          invoiceId: `INV-${Date.now().toString().slice(-6)}`, // إنشاء معرف للفاتورة الجديدة
+          invoiceDate: new Date().toISOString().split("T")[0], // تاريخ إنشاء الفاتورة
+        };
+      }
+      return order;
+    });
+
+    setPurchaseOrders(updatedOrders);
+    setShowConvertDialog(false);
+    setConvertingOrder(null);
+
+    // إظهار رسالة نجاح (في التطبيق الحقيقي)
+    console.log("تم تحويل الطلبية إلى فاتورة:", {
+      orderId: convertingOrder.id,
+      invoiceId: `INV-${Date.now().toString().slice(-6)}`,
+      items: convertingOrder.items,
+      supplier: convertingOrder.supplier,
+      amount: convertingOrder.amount,
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   return (
@@ -218,6 +266,7 @@ const PurchaseOrdersList = () => {
               <option value="partially_received">مستلم جزئياً</option>
               <option value="fully_received">مستلم بالكامل</option>
               <option value="cancelled">ملغي</option>
+              <option value="invoiced">تم إصدار فاتورة</option>
             </select>
           </div>
 
@@ -285,6 +334,18 @@ const PurchaseOrdersList = () => {
                       <Button variant="ghost" size="icon">
                         <Printer className="h-4 w-4" />
                       </Button>
+                      {(order.status === "approved" ||
+                        order.status === "sent") && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleConvertToInvoice(order)}
+                        >
+                          <FileInput className="h-4 w-4 ml-1" />
+                          فاتورة
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -404,6 +465,21 @@ const PurchaseOrdersList = () => {
                   selectedOrder.status === "partially_received") && (
                   <Button variant="outline">تسجيل استلام</Button>
                 )}
+                {(selectedOrder.status === "approved" ||
+                  selectedOrder.status === "sent") && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleConvertToInvoice(selectedOrder)}
+                  >
+                    <FileInput className="ml-2 h-4 w-4" />
+                    تحويل إلى فاتورة
+                  </Button>
+                )}
+                {selectedOrder.status === "invoiced" && (
+                  <Button variant="outline" disabled>
+                    تم إصدار فاتورة {selectedOrder.invoiceId}
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   onClick={() => setShowOrderDetails(false)}
@@ -413,6 +489,67 @@ const PurchaseOrdersList = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* نافذة تأكيد تحويل الطلبية إلى فاتورة */}
+      <Dialog open={showConvertDialog} onOpenChange={setShowConvertDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>تحويل طلبية الشراء إلى فاتورة</DialogTitle>
+            <DialogDescription>
+              هل أنت متأكد من تحويل طلبية الشراء رقم {convertingOrder?.id} إلى
+              فاتورة مشتريات؟
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="flex items-center p-4 mb-4 text-amber-800 border border-amber-200 rounded-lg bg-amber-50">
+              <AlertCircle className="h-5 w-5 ml-2 text-amber-600" />
+              <div>
+                <p className="text-sm">
+                  سيتم إنشاء فاتورة مشتريات جديدة بناءً على بيانات هذه الطلبية،
+                  وتحديث حالة الطلبية إلى "تم إصدار فاتورة".
+                </p>
+              </div>
+            </div>
+            {convertingOrder && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">رقم الطلبية</p>
+                    <p className="font-medium">{convertingOrder.id}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">المورد</p>
+                    <p className="font-medium">{convertingOrder.supplier}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      تاريخ الطلبية
+                    </p>
+                    <p className="font-medium">{convertingOrder.date}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      المبلغ الإجمالي
+                    </p>
+                    <p className="font-medium">
+                      {convertingOrder.amount.toLocaleString()} ₴
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowConvertDialog(false)}
+            >
+              إلغاء
+            </Button>
+            <Button onClick={confirmConvertToInvoice}>تأكيد التحويل</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </Card>

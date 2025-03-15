@@ -604,7 +604,7 @@ const MaterialRequirements = () => {
             </CardHeader>
             <CardContent>
               <div className="border rounded-lg overflow-hidden">
-                <Table>
+                <Table dir="rtl">
                   <TableHeader>
                     <TableRow>
                       <TableHead>رقم المتطلب</TableHead>
@@ -821,7 +821,7 @@ const MaterialRequirements = () => {
             </CardHeader>
             <CardContent>
               <div className="border rounded-lg overflow-hidden">
-                <Table>
+                <Table dir="rtl">
                   <TableHeader>
                     <TableRow>
                       <TableHead>رقم القائمة</TableHead>
@@ -836,7 +836,11 @@ const MaterialRequirements = () => {
                   <TableBody>
                     {filteredBoms.length > 0 ? (
                       filteredBoms.map((bom) => (
-                        <TableRow key={bom.id}>
+                        <TableRow
+                          key={bom.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleBomSelect(bom)}
+                        >
                           <TableCell className="font-medium">
                             {bom.id}
                           </TableCell>
@@ -850,11 +854,17 @@ const MaterialRequirements = () => {
                           <TableCell>{bom.materials.length}</TableCell>
                           <TableCell>{formatDate(bom.updatedAt)}</TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
+                            <div
+                              className="flex items-center gap-1"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleBomSelect(bom)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleBomSelect(bom);
+                                }}
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
@@ -1211,7 +1221,7 @@ const MaterialRequirements = () => {
               <div>
                 <h3 className="text-sm font-medium mb-2">قائمة المواد</h3>
                 <div className="border rounded-lg overflow-hidden">
-                  <Table>
+                  <Table dir="rtl">
                     <TableHeader>
                       <TableRow>
                         <TableHead>المادة</TableHead>

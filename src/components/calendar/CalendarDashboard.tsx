@@ -53,6 +53,30 @@ import {
 import { format, addDays, isSameDay, isSameMonth, parseISO } from "date-fns";
 import { ar } from "date-fns/locale";
 
+// Define interfaces for type safety
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  type: string;
+  status: string;
+  assignees: string[];
+  description: string;
+  location: string;
+}
+
+interface Employee {
+  id: string;
+  name: string;
+  department: string;
+  position: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+}
+
 // Sample events data
 const eventsData = [
   {
@@ -223,7 +247,7 @@ const employeesData = [
 const CalendarDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeTab, setActiveTab] = useState("calendar");
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [filterType, setFilterType] = useState("all");
   const [filterEmployee, setFilterEmployee] = useState("all");
 
@@ -286,7 +310,7 @@ const CalendarDashboard = () => {
   };
 
   // Handle event selection
-  const handleEventSelect = (event: any) => {
+  const handleEventSelect = (event: Event) => {
     setSelectedEvent(event);
   };
 
@@ -330,6 +354,28 @@ const CalendarDashboard = () => {
 
   const eventsByType = getEventsByType();
 
+  // Render employee avatar
+  const renderEmployeeAvatar = (assignee: string, index: number) => {
+    const employee = employeesData.find((emp) => emp.name === assignee);
+    return (
+      <div
+        key={index}
+        className="h-6 w-6 rounded-full border-2 border-background overflow-hidden bg-gray-100 flex items-center justify-center text-xs font-medium"
+        title={assignee}
+      >
+        {employee?.avatar ? (
+          <img
+            src={employee.avatar}
+            alt={assignee}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          assignee.charAt(0)
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -350,24 +396,24 @@ const CalendarDashboard = () => {
         </div>
       </div>
 
-      {/* Calendar Tabs */}
+      {/* Calendar Tabs - Reversed order for RTL support */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="calendar">
-            <CalendarDays className="h-4 w-4 ml-2" />
-            التقويم
-          </TabsTrigger>
-          <TabsTrigger value="events">
-            <CalendarCheck className="h-4 w-4 ml-2" />
-            الأحداث والمهام
+          <TabsTrigger value="analytics">
+            <CalendarRange className="h-4 w-4 ml-2" />
+            تحليلات
           </TabsTrigger>
           <TabsTrigger value="employees">
             <Users className="h-4 w-4 ml-2" />
             الموظفين
           </TabsTrigger>
-          <TabsTrigger value="analytics">
-            <CalendarRange className="h-4 w-4 ml-2" />
-            تحليلات
+          <TabsTrigger value="events">
+            <CalendarCheck className="h-4 w-4 ml-2" />
+            الأحداث والمهام
+          </TabsTrigger>
+          <TabsTrigger value="calendar">
+            <CalendarDays className="h-4 w-4 ml-2" />
+            التقويم
           </TabsTrigger>
         </TabsList>
 
@@ -668,28 +714,9 @@ const CalendarDashboard = () => {
                             <div className="flex -space-x-2 space-x-reverse rtl:space-x-reverse">
                               {event.assignees
                                 .slice(0, 3)
-                                .map((assignee, index) => {
-                                  const employee = employeesData.find(
-                                    (emp) => emp.name === assignee,
-                                  );
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="h-6 w-6 rounded-full border-2 border-background overflow-hidden bg-gray-100 flex items-center justify-center text-xs font-medium"
-                                      title={assignee}
-                                    >
-                                      {employee?.avatar ? (
-                                        <img
-                                          src={employee.avatar}
-                                          alt={assignee}
-                                          className="h-full w-full object-cover"
-                                        />
-                                      ) : (
-                                        assignee.charAt(0)
-                                      )}
-                                    </div>
-                                  );
-                                })}
+                                .map((assignee, index) =>
+                                  renderEmployeeAvatar(assignee, index),
+                                )}
                               {event.assignees.length > 3 && (
                                 <div className="h-6 w-6 rounded-full border-2 border-background bg-gray-100 flex items-center justify-center text-xs font-medium">
                                   +{event.assignees.length - 3}
@@ -934,68 +961,31 @@ const CalendarDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm">اجتماعات</span>
-                      <span className="text-sm font-medium">
-                        {eventsByType.اجتماع} (
-                        {Math.round(
-                          (eventsByType.اجتماع / filteredEvents.length) * 100,
-                        )}
-                        %)
-                      </span>
+                  {Object.entries(eventsByType).map(([type, count]) => (
+                    <div key={type}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm">{type}</span>
+                        <span className="text-sm font-medium">
+                          {count} (
+                          {filteredEvents.length > 0
+                            ? Math.round((count / filteredEvents.length) * 100)
+                            : 0}
+                          %)
+                        </span>
+                      </div>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${type === "اجتماع" ? "bg-blue-500" : type === "مهمة" ? "bg-green-500" : "bg-purple-500"}`}
+                          style={{
+                            width:
+                              filteredEvents.length > 0
+                                ? `${(count / filteredEvents.length) * 100}%`
+                                : "0%",
+                          }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-blue-500"
-                        style={{
-                          width: `${(eventsByType.اجتماع / filteredEvents.length) * 100}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm">مهام</span>
-                      <span className="text-sm font-medium">
-                        {eventsByType.مهمة} (
-                        {Math.round(
-                          (eventsByType.مهمة / filteredEvents.length) * 100,
-                        )}
-                        %)
-                      </span>
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-green-500"
-                        style={{
-                          width: `${(eventsByType.مهمة / filteredEvents.length) * 100}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm">تدريبات</span>
-                      <span className="text-sm font-medium">
-                        {eventsByType.تدريب} (
-                        {Math.round(
-                          (eventsByType.تدريب / filteredEvents.length) * 100,
-                        )}
-                        %)
-                      </span>
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-purple-500"
-                        style={{
-                          width: `${(eventsByType.تدريب / filteredEvents.length) * 100}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

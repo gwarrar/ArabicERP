@@ -1,158 +1,97 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Calendar } from "lucide-react";
-
-interface SalesData {
-  month: string;
-  sales: number;
-  target: number;
-}
+import { Button } from "@/components/ui/button";
+import { Download, Filter } from "lucide-react";
+import DashboardDetailsPopup from "./DashboardDetailsPopup";
 
 interface SalesChartProps {
-  data?: SalesData[];
   title?: string;
-  percentageChange?: number;
-  period?: string;
+  data?: any[];
 }
 
 const SalesChart = ({
-  data = [
-    { month: "يناير", sales: 4000, target: 4500 },
-    { month: "فبراير", sales: 5000, target: 4500 },
-    { month: "مارس", sales: 3500, target: 4500 },
-    { month: "أبريل", sales: 6000, target: 5000 },
-    { month: "مايو", sales: 5500, target: 5000 },
-    { month: "يونيو", sales: 7000, target: 5500 },
-  ],
   title = "تحليل المبيعات",
-  percentageChange = 12.5,
-  period = "شهري",
+  data = [
+    { name: "يناير", sales: 45000, target: 40000 },
+    { name: "فبراير", sales: 52000, target: 45000 },
+    { name: "مارس", sales: 48000, target: 50000 },
+    { name: "أبريل", sales: 61000, target: 55000 },
+    { name: "مايو", sales: 55000, target: 60000 },
+    { name: "يونيو", sales: 67000, target: 65000 },
+  ],
 }: SalesChartProps) => {
-  const [timeFilter, setTimeFilter] = useState("شهري");
+  const [showDetailsPopup, setShowDetailsPopup] = useState(false);
+  const [selectedDataPoint, setSelectedDataPoint] = useState<any>(null);
 
-  const isPositiveChange = percentageChange >= 0;
+  const handleChartClick = (data: any) => {
+    if (data && data.activePayload && data.activePayload.length > 0) {
+      setSelectedDataPoint(data.activePayload[0].payload);
+      setShowDetailsPopup(true);
+    }
+  };
 
   return (
-    <Card
-      className="w-full h-full bg-white shadow-sm border border-[#e2e8f0] rounded-[0.5rem]"
-      dir="rtl"
-    >
-      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4 px-4">
-        <div>
-          <CardTitle className="text-[1.125rem] font-bold text-[#1e293b]">
-            {title}
-          </CardTitle>
-          <div className="flex items-center mt-1 text-[0.875rem]">
-            <span
-              className={`flex items-center ${isPositiveChange ? "text-green-600" : "text-red-600"} font-medium`}
-            >
-              {isPositiveChange ? (
-                <ArrowUpRight className="h-4 w-4 mr-1" />
-              ) : (
-                <ArrowDownRight className="h-4 w-4 mr-1" />
-              )}
-              {Math.abs(percentageChange)}%
-            </span>
-            <span className="text-[#64748b] mr-2">مقارنة بالفترة السابقة</span>
-          </div>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-base font-medium">{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Filter className="ml-2 h-4 w-4" />
+            تصفية
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="ml-2 h-4 w-4" />
+            تصدير
+          </Button>
         </div>
-        <Select value={timeFilter} onValueChange={setTimeFilter}>
-          <SelectTrigger className="w-[120px] h-9 border-[#e2e8f0]">
-            <Calendar className="h-4 w-4 ml-2 text-[#64748b]" />
-            <SelectValue placeholder="الفترة" />
-          </SelectTrigger>
-          <SelectContent className="border-[#e2e8f0]">
-            <SelectItem value="أسبوعي">أسبوعي</SelectItem>
-            <SelectItem value="شهري">شهري</SelectItem>
-            <SelectItem value="ربع سنوي">ربع سنوي</SelectItem>
-            <SelectItem value="سنوي">سنوي</SelectItem>
-          </SelectContent>
-        </Select>
       </CardHeader>
-      <CardContent className="pt-2 px-4 pb-4">
-        <div className="h-[300px]">
+      <CardContent>
+        <div className="h-[240px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
               margin={{
-                top: 5,
+                top: 20,
                 right: 30,
                 left: 20,
-                bottom: 25,
+                bottom: 5,
               }}
+              onClick={handleChartClick}
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#e2e8f0"
-              />
-              <XAxis
-                dataKey="month"
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                axisLine={{ stroke: "#e2e8f0" }}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                axisLine={{ stroke: "#e2e8f0" }}
-                tickLine={false}
-                tickFormatter={(value) => `${value} ₴`}
-              />
-              <Tooltip
-                formatter={(value) => [`${value} ₴`, ""]}
-                labelFormatter={(label) => `شهر ${label}`}
-                contentStyle={{
-                  borderRadius: "8px",
-                  border: "none",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                  textAlign: "right",
-                  direction: "rtl",
-                  backgroundColor: "#fff",
-                  padding: "8px 12px",
-                  fontSize: "12px",
-                  color: "#1e293b",
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend
+                onClick={(e) => {
+                  setShowDetailsPopup(true);
                 }}
               />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                wrapperStyle={{ paddingBottom: "10px", fontSize: "12px" }}
-              />
-              <Bar
-                name="المبيعات"
-                dataKey="sales"
-                fill="#3b82f6"
-                radius={[4, 4, 0, 0]}
-                barSize={30}
-              />
-              <Bar
-                name="المستهدف"
-                dataKey="target"
-                fill="#e2e8f0"
-                radius={[4, 4, 0, 0]}
-                barSize={30}
-              />
+              <Bar dataKey="sales" name="المبيعات" fill="#3b82f6" />
+              <Bar dataKey="target" name="الهدف" fill="#10b981" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
+
+      {/* نافذة التفاصيل */}
+      <DashboardDetailsPopup
+        open={showDetailsPopup}
+        onClose={() => setShowDetailsPopup(false)}
+        chartType="sales"
+        title={title}
+        dataPoint={selectedDataPoint}
+      />
     </Card>
   );
 };
