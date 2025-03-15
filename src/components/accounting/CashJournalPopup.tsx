@@ -129,12 +129,12 @@ const cashJournalData = [
 ];
 
 interface CashJournalPopupProps {
-  open: boolean;
+  open?: boolean;
   onClose: () => void;
 }
 
 const CashJournalPopup: React.FC<CashJournalPopupProps> = ({
-  open,
+  open = true,
   onClose,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");

@@ -26,12 +26,17 @@ const RFIDInvoiceScanner: React.FC<RFIDInvoiceScannerProps> = ({
   isActive = false,
   onToggleScanning,
 }) => {
-  const [scanning, setScanning] = useState(false);
+  const [scanning, setScanning] = useState(isActive);
   const [lastScannedItem, setLastScannedItem] = useState<ScannedProduct | null>(
     null,
   );
   const [scannedCount, setScannedCount] = useState(0);
   const [scanInterval, setScanInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Update scanning state when isActive prop changes
+  useEffect(() => {
+    setScanning(isActive);
+  }, [isActive]);
 
   // محاكاة عملية المسح
   useEffect(() => {

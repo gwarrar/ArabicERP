@@ -145,6 +145,7 @@ const SalesInvoicesTab = () => {
   const [dateFilter, setDateFilter] = useState("all");
   const [showNewInvoice, setShowNewInvoice] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+  const [showRFIDInvoice, setShowRFIDInvoice] = useState(false);
 
   // Calculate summary (memoized)
   const summary = useMemo(() => calculateSummary(), []);
@@ -187,12 +188,16 @@ const SalesInvoicesTab = () => {
             <Plus className="ml-2 h-4 w-4" />
             فاتورة جديدة
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => (window.location.href = "#/sales/invoice-rfid")}
-          >
+          <Button variant="outline" onClick={() => setShowRFIDInvoice(true)}>
             <Tag className="ml-2 h-4 w-4" />
             فاتورة مع RFID
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = "/sales/rfid-integration")}
+          >
+            <Tag className="ml-2 h-4 w-4" />
+            نظام RFID
           </Button>
         </div>
       </div>
@@ -426,6 +431,35 @@ const SalesInvoicesTab = () => {
           invoice={selectedInvoice}
         />
       )}
+
+      {/* RFID Invoice Dialog */}
+      <Dialog
+        open={showRFIDInvoice}
+        onOpenChange={(open) => !open && setShowRFIDInvoice(false)}
+      >
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <div className="flex justify-between items-center">
+              <DialogTitle className="text-xl font-bold">
+                فاتورة مبيعات مع RFID
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowRFIDInvoice(false)}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <DialogDescription>
+              إنشاء فاتورة مبيعات باستخدام تقنية RFID
+            </DialogDescription>
+          </DialogHeader>
+
+          <SalesInvoiceWithRFID />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

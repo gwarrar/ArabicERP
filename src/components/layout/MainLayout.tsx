@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ExchangeRateFloatingWidget from "../dashboard/ExchangeRateFloatingWidget";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -19,17 +18,26 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <ErrorBoundary>
       <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
-        {/* Header */}
-        <Header />
-
-        {/* Sidebar */}
-        <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
+        {/* Sidebar - Fixed position */}
+        <div className="fixed top-0 right-0 h-full z-30">
+          <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
+        </div>
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header - Fixed position */}
+          <div
+            className={cn(
+              "fixed top-0 left-0 z-20 transition-all duration-300",
+              sidebarCollapsed ? "right-[70px]" : "right-[280px]",
+            )}
+          >
+            <Header />
+          </div>
+
           <main
             className={cn(
-              "flex-1 overflow-y-auto p-6 transition-all duration-300 mt-[64px] flex justify-center",
+              "flex-1 overflow-y-auto p-6 transition-all duration-300 mt-[64px]",
               sidebarCollapsed ? "mr-[70px]" : "mr-[280px]",
             )}
           >
@@ -37,7 +45,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {children}
             </div>
           </main>
-          <ExchangeRateFloatingWidget />
         </div>
       </div>
     </ErrorBoundary>

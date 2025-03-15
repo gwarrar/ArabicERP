@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { SheetTabs } from "@/components/ui/sheet-tabs";
 import { CashTransaction } from "./CashTransaction";
 import { NewJournalEntry } from "./NewJournalEntry";
-import { CashJournal } from "./CashJournal";
+import { EnhancedCashJournal } from "./EnhancedCashJournal";
 import { defaultAccounts } from "@/data/accounts";
 import {
   Dialog,
@@ -150,18 +150,28 @@ const journalEntriesData = [
 ];
 
 interface JournalEntriesPopupProps {
-  open: boolean;
+  open?: boolean;
   onClose: () => void;
+  initialTab?: string;
 }
 
 const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
-  open,
+  open = true,
   onClose,
+  initialTab = "journal",
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null);
+  const [showTransactionSheet, setShowTransactionSheet] = useState(false);
+
+  // Open transaction sheet when initialTab is provided
+  useEffect(() => {
+    if (initialTab === "new-entry" && open) {
+      handleOpenTransactionSheet();
+    }
+  }, [initialTab, open]);
 
   // Filter entries
   const filteredEntries = journalEntriesData.filter((entry) => {
@@ -188,6 +198,68 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
     } else {
       setSelectedEntry(entryId);
     }
+  };
+
+  // Handle opening transaction sheet
+  const handleOpenTransactionSheet = () => {
+    // Create a container for the sheet
+    const container = document.createElement("div");
+    container.id = "transaction-sheet";
+    document.body.appendChild(container);
+
+    // Render the sheet tabs component
+    const root = ReactDOM.createRoot(container);
+    root.render(
+      <SheetTabs
+        title="المعاملات المالية"
+        defaultTab={initialTab === "new-entry" ? "new-entry" : "journal"}
+        tabs={[
+          {
+            id: "payment",
+            label: "مدفوعات",
+            content: (
+              <CashTransaction
+                type="payment"
+                accounts={defaultAccounts}
+                onSave={() => {}}
+              />
+            ),
+          },
+          {
+            id: "receipt",
+            label: "مقبوضات",
+            content: (
+              <CashTransaction
+                type="receipt"
+                accounts={defaultAccounts}
+                onSave={() => {}}
+              />
+            ),
+          },
+          {
+            id: "new-entry",
+            label: "قيد محاسبي",
+            content: (
+              <NewJournalEntry accounts={defaultAccounts} onSave={() => {}} />
+            ),
+          },
+          {
+            id: "cash-journal",
+            label: "يومية الصندوق",
+            content: <EnhancedCashJournal accounts={defaultAccounts} />,
+          },
+        ]}
+        onClose={() => {
+          setTimeout(() => {
+            root.unmount();
+            container.remove();
+            setShowTransactionSheet(false);
+          }, 300);
+        }}
+      />,
+    );
+
+    setShowTransactionSheet(true);
   };
 
   return (
@@ -325,69 +397,7 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
               <Download className="h-4 w-4 ml-1" />
               تصدير
             </Button>
-            <Button
-              className="h-10"
-              onClick={() => {
-                // Create a container for the sheet
-                const container = document.createElement("div");
-                container.id = "transaction-sheet";
-                document.body.appendChild(container);
-
-                // Render the sheet tabs component
-                const root = ReactDOM.createRoot(container);
-                root.render(
-                  <SheetTabs
-                    title="المعاملات المالية"
-                    defaultTab="new-entry"
-                    tabs={[
-                      {
-                        id: "payment",
-                        label: "مدفوعات",
-                        content: (
-                          <CashTransaction
-                            type="payment"
-                            accounts={defaultAccounts}
-                            onSave={() => {}}
-                          />
-                        ),
-                      },
-                      {
-                        id: "receipt",
-                        label: "مقبوضات",
-                        content: (
-                          <CashTransaction
-                            type="receipt"
-                            accounts={defaultAccounts}
-                            onSave={() => {}}
-                          />
-                        ),
-                      },
-                      {
-                        id: "new-entry",
-                        label: "قيد يومية",
-                        content: (
-                          <NewJournalEntry
-                            accounts={defaultAccounts}
-                            onSave={() => {}}
-                          />
-                        ),
-                      },
-                      {
-                        id: "cash-journal",
-                        label: "يومية الصندوق",
-                        content: <CashJournal accounts={defaultAccounts} />,
-                      },
-                    ]}
-                    onClose={() => {
-                      setTimeout(() => {
-                        root.unmount();
-                        container.remove();
-                      }, 300);
-                    }}
-                  />,
-                );
-              }}
-            >
+            <Button className="h-10" onClick={handleOpenTransactionSheet}>
               <Plus className="h-4 w-4 ml-1" />
               إضافة قيد جديد
             </Button>
@@ -399,15 +409,15 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
           <Table>
             <TableHeader className="sticky top-0 bg-white">
               <TableRow>
-                <TableHead>رقم القيد</TableHead>
-                <TableHead>التاريخ</TableHead>
-                <TableHead>المرجع</TableHead>
-                <TableHead className="w-[300px]">البيان</TableHead>
-                <TableHead>الحالة</TableHead>
-                <TableHead>المدين</TableHead>
-                <TableHead>الدائن</TableHead>
-                <TableHead>المستخدم</TableHead>
                 <TableHead></TableHead>
+                <TableHead>المستخدم</TableHead>
+                <TableHead>الدائن</TableHead>
+                <TableHead>المدين</TableHead>
+                <TableHead>الحالة</TableHead>
+                <TableHead className="w-[300px]">البيان</TableHead>
+                <TableHead>المرجع</TableHead>
+                <TableHead>التاريخ</TableHead>
+                <TableHead>رقم القيد</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -418,10 +428,18 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
                       className={`hover:bg-gray-50 cursor-pointer ${selectedEntry === entry.id ? "bg-gray-50" : ""}`}
                       onClick={() => toggleEntryDetails(entry.id)}
                     >
-                      <TableCell className="font-medium">{entry.id}</TableCell>
-                      <TableCell>{formatDate(entry.date)}</TableCell>
-                      <TableCell>{entry.reference}</TableCell>
-                      <TableCell>{entry.description}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                      <TableCell>{entry.createdBy}</TableCell>
+                      <TableCell className="font-medium">
+                        {entry.creditTotal.toLocaleString()} ₴
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {entry.debitTotal.toLocaleString()} ₴
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
@@ -430,18 +448,10 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
                           {entry.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium">
-                        {entry.debitTotal.toLocaleString()} ₴
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {entry.creditTotal.toLocaleString()} ₴
-                      </TableCell>
-                      <TableCell>{entry.createdBy}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+                      <TableCell>{entry.description}</TableCell>
+                      <TableCell>{entry.reference}</TableCell>
+                      <TableCell>{formatDate(entry.date)}</TableCell>
+                      <TableCell className="font-medium">{entry.id}</TableCell>
                     </TableRow>
 
                     {/* Entry Details */}
@@ -455,36 +465,36 @@ const JournalEntriesPopup: React.FC<JournalEntriesPopupProps> = ({
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead>الحساب</TableHead>
-                                  <TableHead>مدين</TableHead>
                                   <TableHead>دائن</TableHead>
+                                  <TableHead>مدين</TableHead>
+                                  <TableHead>الحساب</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {entry.entries.map((line, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{line.account}</TableCell>
-                                    <TableCell className="text-red-600">
-                                      {line.debit > 0
-                                        ? line.debit.toLocaleString()
-                                        : "-"}
-                                    </TableCell>
                                     <TableCell className="text-green-600">
                                       {line.credit > 0
                                         ? line.credit.toLocaleString()
                                         : "-"}
                                     </TableCell>
+                                    <TableCell className="text-red-600">
+                                      {line.debit > 0
+                                        ? line.debit.toLocaleString()
+                                        : "-"}
+                                    </TableCell>
+                                    <TableCell>{line.account}</TableCell>
                                   </TableRow>
                                 ))}
                                 <TableRow className="border-t-2">
-                                  <TableCell className="font-bold">
-                                    الإجمالي
+                                  <TableCell className="font-bold text-green-600">
+                                    {entry.creditTotal.toLocaleString()} ₴
                                   </TableCell>
                                   <TableCell className="font-bold text-red-600">
                                     {entry.debitTotal.toLocaleString()} ₴
                                   </TableCell>
-                                  <TableCell className="font-bold text-green-600">
-                                    {entry.creditTotal.toLocaleString()} ₴
+                                  <TableCell className="font-bold">
+                                    الإجمالي
                                   </TableCell>
                                 </TableRow>
                               </TableBody>

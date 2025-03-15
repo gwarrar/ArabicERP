@@ -19,6 +19,7 @@ import {
   TrendingUp,
   TrendingDown,
   GitBranch,
+  Sparkles,
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -141,6 +142,12 @@ const Sidebar = () => {
           label="لوحة تحكم SaaS"
           href="/saas-admin"
           active={isActive("/saas-admin")}
+        />
+        <SidebarItem
+          icon={<Sparkles className="h-5 w-5" />}
+          label="المساعد الذكي"
+          href="/ai-assistant"
+          active={isActive("/ai-assistant")}
         />
       </nav>
       <div className="mt-6 px-2 space-y-1">

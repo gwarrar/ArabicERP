@@ -396,24 +396,24 @@ const CalendarDashboard = () => {
         </div>
       </div>
 
-      {/* Calendar Tabs */}
+      {/* Calendar Tabs - Reversed order for RTL support */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="calendar">
-            <CalendarDays className="h-4 w-4 ml-2" />
-            التقويم
-          </TabsTrigger>
-          <TabsTrigger value="events">
-            <CalendarCheck className="h-4 w-4 ml-2" />
-            الأحداث والمهام
+          <TabsTrigger value="analytics">
+            <CalendarRange className="h-4 w-4 ml-2" />
+            تحليلات
           </TabsTrigger>
           <TabsTrigger value="employees">
             <Users className="h-4 w-4 ml-2" />
             الموظفين
           </TabsTrigger>
-          <TabsTrigger value="analytics">
-            <CalendarRange className="h-4 w-4 ml-2" />
-            تحليلات
+          <TabsTrigger value="events">
+            <CalendarCheck className="h-4 w-4 ml-2" />
+            الأحداث والمهام
+          </TabsTrigger>
+          <TabsTrigger value="calendar">
+            <CalendarDays className="h-4 w-4 ml-2" />
+            التقويم
           </TabsTrigger>
         </TabsList>
 

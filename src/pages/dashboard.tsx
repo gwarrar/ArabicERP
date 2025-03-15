@@ -1,15 +1,13 @@
 import React from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import EnhancedDashboardTabs from "@/components/dashboard/EnhancedDashboardTabs";
+import DashboardTabs from "@/components/dashboard/DashboardTabs";
 
-const Dashboard = () => {
+const DashboardPage = () => {
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <EnhancedDashboardTabs />
-      </div>
+      <DashboardTabs />
     </MainLayout>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

@@ -16,8 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar, Plus, Trash } from "lucide-react";
+import { Calendar, Plus, Trash, AlertCircle } from "lucide-react";
 import { Account } from "@/types/accounting";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface NewJournalEntryProps {
   accounts: Account[];
@@ -91,6 +97,7 @@ export const NewJournalEntry: React.FC<NewJournalEntryProps> = ({
   const totalDebit = lines.reduce((sum, line) => sum + (line.debit || 0), 0);
   const totalCredit = lines.reduce((sum, line) => sum + (line.credit || 0), 0);
   const isBalanced = totalDebit === totalCredit && totalDebit > 0;
+  const difference = Math.abs(totalDebit - totalCredit);
 
   // Flatten accounts for select
   const flattenAccounts = (accounts: Account[], prefix = ""): any[] => {
@@ -121,8 +128,22 @@ export const NewJournalEntry: React.FC<NewJournalEntryProps> = ({
 
   const flatAccounts = flattenAccounts(accounts);
 
+  // Check if all required fields are filled
+  const hasEmptyRequiredFields = lines.some((line) =>
+    line.debit > 0 || line.credit > 0 ? !line.account : false,
+  );
+
+  // Handle save with validation
+  const handleSave = () => {
+    if (isBalanced && !hasEmptyRequiredFields && description && reference) {
+      onSave();
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white p-6 rounded-lg">
+      <h2 className="text-xl font-bold mb-4">إنشاء قيد محاسبي جديد</h2>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">التاريخ</label>
@@ -179,7 +200,9 @@ export const NewJournalEntry: React.FC<NewJournalEntryProps> = ({
                       updateLine(line.id, "account", value)
                     }
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      className={`w-full ${(line.debit > 0 || line.credit > 0) && !line.account ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="اختر الحساب" />
                     </SelectTrigger>
                     <SelectContent>
@@ -239,10 +262,10 @@ export const NewJournalEntry: React.FC<NewJournalEntryProps> = ({
               <TableCell colSpan={3} className="text-left font-medium">
                 الإجمالي
               </TableCell>
-              <TableCell className="text-left font-medium">
+              <TableCell className="text-left font-medium text-red-600">
                 {totalDebit.toLocaleString()} ₴
               </TableCell>
-              <TableCell className="text-left font-medium">
+              <TableCell className="text-left font-medium text-green-600">
                 {totalCredit.toLocaleString()} ₴
               </TableCell>
               <TableCell></TableCell>
@@ -259,14 +282,34 @@ export const NewJournalEntry: React.FC<NewJournalEntryProps> = ({
 
         <div className="flex items-center gap-2">
           {!isBalanced && (
-            <p className="text-sm text-red-500">
-              القيد غير متوازن (الفرق:{" "}
-              {Math.abs(totalDebit - totalCredit).toLocaleString()} ₴)
-            </p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center text-sm text-red-500">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    القيد غير متوازن
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>الفرق: {difference.toLocaleString()} ₴</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          {hasEmptyRequiredFields && (
+            <span className="text-sm text-red-500">
+              يجب اختيار حساب لكل سطر
+            </span>
           )}
           <Button
-            onClick={onSave}
-            disabled={!isBalanced || !description || !reference}
+            onClick={handleSave}
+            disabled={
+              !isBalanced ||
+              hasEmptyRequiredFields ||
+              !description ||
+              !reference
+            }
+            className="bg-primary hover:bg-primary/90"
           >
             حفظ القيد
           </Button>

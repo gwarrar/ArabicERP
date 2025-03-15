@@ -29,6 +29,7 @@ import {
   Download,
 } from "lucide-react";
 import { FabricRoll } from "@/types/inventory";
+import { QRCodeSVG } from "qrcode.react";
 
 const FabricRollsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,6 +38,10 @@ const FabricRollsList = () => {
   const [selectedRoll, setSelectedRoll] = useState<FabricRoll | null>(null);
   const [showNewRollDialog, setShowNewRollDialog] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedWarehouse, setSelectedWarehouse] = useState("all");
 
   // بيانات تجريبية لرولونات القماش
   const fabricRolls: FabricRoll[] = [
@@ -160,7 +165,31 @@ const FabricRollsList = () => {
   // الأنواع الفريدة للقماش
   const fabricTypes = ["all", ...new Set(fabricRolls.map((roll) => roll.type))];
 
-  // تصفية الرولونات بناءً على البحث والنوع
+  // الألوان الفريدة للقماش
+  const fabricColors = [
+    "all",
+    ...new Set(fabricRolls.map((roll) => roll.color)),
+  ];
+
+  // حالات الرولونات الفريدة
+  const fabricStatuses = [
+    "all",
+    ...new Set(fabricRolls.map((roll) => roll.status)),
+  ];
+
+  // المدن الفريدة
+  const cities = ["all", "الرياض", "جدة", "الدمام", "مكة", "المدينة"];
+
+  // المستودعات الفريدة
+  const warehouses = [
+    "all",
+    "المستودع الرئيسي",
+    "مستودع المواد الخام",
+    "مستودع الإنتاج",
+    "مستودع الشحن",
+  ];
+
+  // تصفية الرولونات بناءً على البحث والنوع واللون والحالة والمدينة والمستودع
   const filteredRolls = fabricRolls.filter((roll) => {
     const matchesSearch = searchTerm
       ? roll.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -169,8 +198,35 @@ const FabricRollsList = () => {
       : true;
 
     const matchesType = selectedType === "all" || roll.type === selectedType;
+    const matchesColor =
+      selectedColor === "all" || roll.color === selectedColor;
+    const matchesStatus =
+      selectedStatus === "all" || roll.status === selectedStatus;
 
-    return matchesSearch && matchesType;
+    // تحقق من تطابق المدينة والمستودع
+    // نفترض أن المستودع مرتبط بالمدينة في البيانات الحقيقية
+    const matchesCity =
+      selectedCity === "all" ||
+      (roll.warehouseId === "WH-001" &&
+        (selectedCity === "الرياض" || selectedCity === "جدة")) ||
+      (roll.warehouseId === "WH-002" &&
+        (selectedCity === "الدمام" || selectedCity === "مكة"));
+
+    const matchesWarehouse =
+      selectedWarehouse === "all" ||
+      (roll.warehouseId === "WH-001" &&
+        selectedWarehouse === "المستودع الرئيسي") ||
+      (roll.warehouseId === "WH-002" &&
+        selectedWarehouse === "مستودع المواد الخام");
+
+    return (
+      matchesSearch &&
+      matchesType &&
+      matchesColor &&
+      matchesStatus &&
+      matchesCity &&
+      matchesWarehouse
+    );
   });
 
   const handleRollClick = (roll: FabricRoll) => {
@@ -214,6 +270,16 @@ const FabricRollsList = () => {
     }
   };
 
+  // إعادة تعيين جميع المرشحات
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSelectedType("all");
+    setSelectedColor("all");
+    setSelectedStatus("all");
+    setSelectedCity("all");
+    setSelectedWarehouse("all");
+  };
+
   return (
     <Card className="p-6 bg-white dark:bg-[#1e1e2d] dark:text-white">
       <div className="flex justify-between items-center mb-6">
@@ -251,6 +317,75 @@ const FabricRollsList = () => {
               ))}
             </select>
           </div>
+
+          <div className="flex items-center gap-1 bg-background border rounded-md px-3 py-1">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              className="bg-transparent border-none text-sm focus:outline-none"
+              value={selectedColor}
+              onChange={(e) => setSelectedColor(e.target.value)}
+            >
+              <option value="all">جميع الألوان</option>
+              {fabricColors.slice(1).map((color, index) => (
+                <option key={index} value={color}>
+                  {color}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1 bg-background border rounded-md px-3 py-1">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              className="bg-transparent border-none text-sm focus:outline-none"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="all">جميع الحالات</option>
+              {fabricStatuses.slice(1).map((status, index) => (
+                <option key={index} value={status}>
+                  {getStatusText(status)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1 bg-background border rounded-md px-3 py-1">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              className="bg-transparent border-none text-sm focus:outline-none"
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+            >
+              <option value="all">جميع المدن</option>
+              {cities.slice(1).map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1 bg-background border rounded-md px-3 py-1">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              className="bg-transparent border-none text-sm focus:outline-none"
+              value={selectedWarehouse}
+              onChange={(e) => setSelectedWarehouse(e.target.value)}
+            >
+              <option value="all">جميع المستودعات</option>
+              {warehouses.slice(1).map((warehouse, index) => (
+                <option key={index} value={warehouse}>
+                  {warehouse}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Button variant="outline" size="sm" onClick={resetFilters}>
+            <Filter className="h-4 w-4 ml-1" />
+            إعادة ضبط
+          </Button>
         </div>
       </div>
 
@@ -365,9 +500,20 @@ const FabricRollsList = () => {
           {selectedRoll && (
             <div className="space-y-6">
               <div className="flex flex-col items-center justify-center">
-                {/* هنا يمكن استخدام مكتبة لتوليد QR Code */}
-                <div className="w-64 h-64 border-2 border-dashed border-gray-300 flex items-center justify-center mb-4">
-                  <QrCode className="h-32 w-32 text-gray-400" />
+                {/* استخدام مكتبة QRCodeSVG لتوليد QR Code */}
+                <div className="w-64 h-64 border-2 border-gray-300 flex items-center justify-center mb-4 p-4">
+                  <QRCodeSVG
+                    value={JSON.stringify({
+                      id: selectedRoll.id,
+                      serialNumber: selectedRoll.serialNumber,
+                      barcode: selectedRoll.barcode,
+                      name: selectedRoll.name,
+                      type: selectedRoll.type,
+                    })}
+                    size={220}
+                    level="H"
+                    includeMargin={true}
+                  />
                 </div>
                 <p className="text-center font-medium">
                   {selectedRoll.serialNumber}

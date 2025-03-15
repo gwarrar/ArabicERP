@@ -40,6 +40,8 @@ import {
   Percent,
   Tag,
   Scan,
+  Phone,
+  Mail,
 } from "lucide-react";
 import RFIDInvoiceScanner from "@/components/shared/RFIDInvoiceScanner";
 
@@ -63,7 +65,7 @@ interface Customer {
 
 const SalesInvoiceWithRFID = () => {
   // حالة استخدام ماسح RFID
-  const [useRFID, setUseRFID] = useState(false);
+  const [useRFID, setUseRFID] = useState(true);
 
   // حالة الفاتورة
   const [invoiceItems, setInvoiceItems] = useState<ScannedProduct[]>([]);
@@ -416,127 +418,76 @@ const SalesInvoiceWithRFID = () => {
             <div className="mt-6 border-t pt-4">
               <div className="flex flex-col space-y-2 md:w-72 mr-auto">
                 <div className="flex justify-between">
-                  <span>المجموع الفرعي:</span>
+                  <span className="text-muted-foreground">المجموع الفرعي:</span>
                   <span>{calculateSubtotal().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <span>الخصم (%):</span>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">الخصم (%):</span>
                     <Input
                       type="number"
+                      min="0"
+                      max="100"
                       value={discount}
                       onChange={(e) =>
                         setDiscount(parseFloat(e.target.value) || 0)
                       }
-                      className="w-16 h-8 mr-2"
+                      className="w-16 h-8"
                     />
                   </div>
                   <span>{calculateDiscount().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <span>الضريبة (%):</span>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">الضريبة (%):</span>
                     <Input
                       type="number"
+                      min="0"
+                      max="100"
                       value={tax}
                       onChange={(e) => setTax(parseFloat(e.target.value) || 0)}
-                      className="w-16 h-8 mr-2"
+                      className="w-16 h-8"
                     />
                   </div>
                   <span>{calculateTax().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-lg border-t pt-2">
+
+                <div className="flex justify-between font-bold text-lg pt-2 border-t">
                   <span>الإجمالي:</span>
                   <span>{calculateTotal().toFixed(2)}</span>
                 </div>
+              </div>
+
+              <div className="mt-4">
+                <Label htmlFor="notes">ملاحظات</Label>
+                <textarea
+                  id="notes"
+                  className="w-full mt-1 p-2 border rounded-md"
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="أدخل أي ملاحظات إضافية هنا..."
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={printInvoice}>
+                  <Printer className="ml-2 h-4 w-4" />
+                  طباعة
+                </Button>
+                <Button onClick={saveInvoice}>
+                  <Save className="ml-2 h-4 w-4" />
+                  حفظ الفاتورة
+                </Button>
               </div>
             </div>
           )}
         </CardContent>
       </Card>
-
-      {/* ملاحظات وأزرار الإجراءات */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>ملاحظات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <textarea
-              className="w-full h-24 p-2 border rounded-md"
-              placeholder="أدخل أي ملاحظات إضافية هنا..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            ></textarea>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>إجراءات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-2">
-              <Button className="w-full" onClick={saveInvoice}>
-                <Save className="ml-2 h-4 w-4" />
-                حفظ الفاتورة
-              </Button>
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={printInvoice}>
-                  <Printer className="ml-2 h-4 w-4" />
-                  طباعة
-                </Button>
-                <Button variant="outline">
-                  <Download className="ml-2 h-4 w-4" />
-                  تصدير PDF
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
 
 export default SalesInvoiceWithRFID;
-
-// استيراد أيقونات إضافية
-function Phone(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-    </svg>
-  );
-}
-
-function Mail(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="16" x="2" y="4" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  );
-}

@@ -29,6 +29,7 @@ import {
   Warehouse,
   X,
 } from "lucide-react";
+import StockTransferWithRFID from "./StockTransferWithRFID";
 
 const StockMovements = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,6 +43,7 @@ const StockMovements = () => {
   const [showMovementDetails, setShowMovementDetails] = useState(false);
   const [selectedMovement, setSelectedMovement] = useState<any>(null);
   const [showNewMovementDialog, setShowNewMovementDialog] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
 
   // Sample stock movements data
   const stockMovements = [
@@ -150,6 +152,10 @@ const StockMovements = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">حركة المخزون</h2>
         <div className="flex gap-2">
+          <Button onClick={() => setShowTransferDialog(true)}>
+            <ArrowRightLeft className="ml-2 h-4 w-4" />
+            مناقلة مخزون
+          </Button>
           <Button onClick={() => setShowNewMovementDialog(true)}>
             <Plus className="ml-2 h-4 w-4" />
             حركة جديدة
@@ -497,6 +503,16 @@ const StockMovements = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Stock Transfer Dialog */}
+      <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>مناقلة مخزون</DialogTitle>
+          </DialogHeader>
+          <StockTransferWithRFID />
         </DialogContent>
       </Dialog>
     </Card>
