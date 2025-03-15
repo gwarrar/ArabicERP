@@ -133,3 +133,78 @@ export interface WarehouseShelf {
   capacity: number;
   occupiedSpace: number;
 }
+
+// Container types
+export interface Container {
+  id: string;
+  name: string;
+  trackingNumber?: string;
+  arrivalDate: string;
+  expectedArrivalDate?: string;
+  status:
+    | "pending"
+    | "in_transit"
+    | "arrived"
+    | "cleared"
+    | "received"
+    | "completed";
+  supplier: string;
+  supplierId: string;
+  origin: string;
+  destination: string;
+  shippingCompany?: string;
+  shippingMethod?: string;
+  containerType?: string;
+  containerSize?: string;
+  weight?: number;
+  volume?: number;
+  expectedItems: ContainerItem[];
+  actualItems?: ContainerItem[];
+  linkedInvoices?: ContainerLinkedInvoice[];
+  expenses?: ContainerExpense[];
+  documents?: ContainerDocument[];
+  notes?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContainerItem {
+  id: string;
+  productId: string;
+  productName: string;
+  expectedQuantity: number;
+  actualQuantity?: number;
+  actualWeight?: number;
+  actualLength?: number;
+  unit: string;
+  unitPrice: number;
+  totalPrice: number;
+  notes?: string;
+}
+
+export interface ContainerLinkedInvoice {
+  id: string;
+  supplier: string;
+  date: string;
+  amount: number;
+  status: string;
+}
+
+export interface ContainerExpense {
+  id: string;
+  date: string;
+  expenseType: string;
+  description: string;
+  amount: number;
+  paymentStatus: "paid" | "pending";
+  beneficiary: string;
+}
+
+export interface ContainerDocument {
+  id: string;
+  name: string;
+  type: string;
+  uploadedAt: string;
+  size: string;
+}

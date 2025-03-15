@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ProductDetails from "./ProductDetails";
 import {
   Search,
   Plus,
@@ -249,87 +250,11 @@ const ProductsList = () => {
       </div>
 
       {/* Product Details Dialog */}
-      <Dialog open={showProductDetails} onOpenChange={setShowProductDetails}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>تفاصيل المنتج</DialogTitle>
-          </DialogHeader>
-          {selectedProduct && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">رمز المنتج</p>
-                  <p className="font-medium">{selectedProduct.sku}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">اسم المنتج</p>
-                  <p className="font-medium">{selectedProduct.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الفئة</p>
-                  <p className="font-medium">{selectedProduct.category}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">وحدة القياس</p>
-                  <p className="font-medium">{selectedProduct.unit}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    المخزون الحالي
-                  </p>
-                  <p
-                    className={`font-medium ${selectedProduct.currentStock < selectedProduct.minStock ? "text-red-600" : ""}`}
-                  >
-                    {selectedProduct.currentStock}
-                    {selectedProduct.currentStock <
-                      selectedProduct.minStock && (
-                      <span className="text-xs text-red-600 mr-2">
-                        (أقل من الحد الأدنى)
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    الحد الأدنى للمخزون
-                  </p>
-                  <p className="font-medium">{selectedProduct.minStock}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">المستودع</p>
-                  <p className="font-medium">{selectedProduct.warehouse}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الحالة</p>
-                  <span
-                    className={`px-2 py-1 text-xs ${selectedProduct.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} rounded-full`}
-                  >
-                    {selectedProduct.status === "active" ? "نشط" : "غير نشط"}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">الوصف</p>
-                <p className="font-medium">{selectedProduct.description}</p>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowProductDetails(false)}
-                >
-                  إغلاق
-                </Button>
-                <Button variant="outline">
-                  <Edit className="ml-2 h-4 w-4" />
-                  تعديل
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ProductDetails
+        open={showProductDetails}
+        onClose={() => setShowProductDetails(false)}
+        product={selectedProduct}
+      />
 
       {/* New Product Dialog */}
       <Dialog

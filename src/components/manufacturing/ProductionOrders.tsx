@@ -73,140 +73,198 @@ import {
   Users,
   Workflow,
   Zap,
+  PauseCircle,
+  PlayCircle,
+  XCircle,
 } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import ProductionOrderDetails from "./ProductionOrderDetails";
 
 // Sample production orders data
 const productionOrdersData = [
   {
     id: "PO-2024-001",
-    product: "قميص قطني",
+    productName: "قميص قطني",
     quantity: 500,
+    unit: "قطعة",
     completedQuantity: 325,
     dueDate: "2024-08-15",
-    status: "in-progress",
+    status: "قيد التنفيذ",
     progress: 65,
     workCenter: "قسم الخياطة",
     priority: "عالية",
-    currentOperation: "خياطة القميص القطني",
+    currentStage: "خياطة القميص القطني",
     startDate: "2024-08-01",
     estimatedEndDate: "2024-08-12",
     createdBy: "أحمد محمد",
     createdAt: "2024-07-25",
     customer: "شركة الأزياء العصرية",
     orderNumber: "SO-2024-112",
+    productionLine: "خط الإنتاج 1",
+    supervisor: "محمد علي",
+    salesOrder: "SO-2024-112",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "15 يوم",
+    remainingTime: "5 أيام",
+    notes: "يجب الانتباه لجودة الخياطة",
   },
   {
     id: "PO-2024-002",
-    product: "بنطلون جينز",
+    productName: "بنطلون جينز",
     quantity: 300,
+    unit: "قطعة",
     completedQuantity: 0,
     dueDate: "2024-08-20",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     workCenter: "قسم القص",
     priority: "متوسطة",
-    currentOperation: "قص قماش الجينز",
+    currentStage: "قص قماش الجينز",
     startDate: "2024-08-05",
     estimatedEndDate: "2024-08-18",
     createdBy: "سارة أحمد",
     createdAt: "2024-07-28",
     customer: "متجر الملابس الرجالية",
     orderNumber: "SO-2024-118",
+    productionLine: "خط الإنتاج 2",
+    supervisor: "سارة أحمد",
+    salesOrder: "SO-2024-118",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "15 يوم",
+    remainingTime: "15 يوم",
+    notes: "",
   },
   {
     id: "PO-2024-003",
-    product: "فستان صيفي",
+    productName: "فستان صيفي",
     quantity: 200,
+    unit: "قطعة",
     completedQuantity: 200,
     dueDate: "2024-08-10",
-    status: "completed",
+    status: "مكتمل",
     progress: 100,
     workCenter: "قسم التعبئة",
     priority: "عالية",
-    currentOperation: "تعبئة الفستان الصيفي",
+    currentStage: "مكتمل",
     startDate: "2024-07-25",
     estimatedEndDate: "2024-08-08",
-    completedDate: "2024-08-08",
     createdBy: "محمد علي",
     createdAt: "2024-07-20",
     customer: "متجر الأزياء النسائية",
     orderNumber: "SO-2024-105",
+    productionLine: "خط الإنتاج 1",
+    supervisor: "محمد علي",
+    salesOrder: "SO-2024-105",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "15 يوم",
+    remainingTime: "0 يوم",
+    notes: "",
   },
   {
     id: "PO-2024-004",
-    product: "بلوزة حريرية",
+    productName: "بلوزة حريرية",
     quantity: 150,
+    unit: "قطعة",
     completedQuantity: 45,
     dueDate: "2024-08-25",
-    status: "in-progress",
+    status: "قيد التنفيذ",
     progress: 30,
     workCenter: "قسم التطريز",
     priority: "منخفضة",
-    currentOperation: "تطريز البلوزة الحريرية",
+    currentStage: "تطريز البلوزة الحريرية",
     startDate: "2024-08-03",
     estimatedEndDate: "2024-08-22",
     createdBy: "فاطمة حسن",
     createdAt: "2024-07-30",
     customer: "بوتيك الأناقة",
     orderNumber: "SO-2024-121",
+    productionLine: "خط الإنتاج 3",
+    supervisor: "فاطمة حسن",
+    salesOrder: "SO-2024-121",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "20 يوم",
+    remainingTime: "15 يوم",
+    notes: "",
   },
   {
     id: "PO-2024-005",
-    product: "جاكيت شتوي",
+    productName: "جاكيت شتوي",
     quantity: 100,
+    unit: "قطعة",
     completedQuantity: 0,
     dueDate: "2024-09-05",
-    status: "planned",
+    status: "قيد الانتظار",
     progress: 0,
     workCenter: "قسم القص",
     priority: "متوسطة",
-    currentOperation: "قص قماش الجاكيت",
+    currentStage: "قص قماش الجاكيت",
     startDate: "2024-08-10",
     estimatedEndDate: "2024-09-02",
     createdBy: "خالد عبدالله",
     createdAt: "2024-08-01",
     customer: "متجر الملابس الشتوية",
     orderNumber: "SO-2024-125",
+    productionLine: "خط الإنتاج 2",
+    supervisor: "خالد عبدالله",
+    salesOrder: "SO-2024-125",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "25 يوم",
+    remainingTime: "25 يوم",
+    notes: "",
   },
   {
     id: "PO-2024-006",
-    product: "تي شيرت قطني",
+    productName: "تي شيرت قطني",
     quantity: 400,
+    unit: "قطعة",
     completedQuantity: 400,
     dueDate: "2024-08-05",
-    status: "completed",
+    status: "مكتمل",
     progress: 100,
     workCenter: "قسم التعبئة",
     priority: "عالية",
-    currentOperation: "تعبئة التي شيرت",
+    currentStage: "مكتمل",
     startDate: "2024-07-20",
     estimatedEndDate: "2024-08-03",
-    completedDate: "2024-08-02",
     createdBy: "أحمد محمد",
     createdAt: "2024-07-15",
     customer: "شركة الملابس الرياضية",
     orderNumber: "SO-2024-098",
+    productionLine: "خط الإنتاج 1",
+    supervisor: "أحمد محمد",
+    salesOrder: "SO-2024-098",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "15 يوم",
+    remainingTime: "0 يوم",
+    notes: "",
   },
   {
     id: "PO-2024-007",
-    product: "بيجاما قطنية",
+    productName: "بيجاما قطنية",
     quantity: 250,
+    unit: "قطعة",
     completedQuantity: 0,
     dueDate: "2024-09-10",
-    status: "on-hold",
+    status: "متوقف",
     progress: 0,
     workCenter: "-",
     priority: "منخفضة",
-    currentOperation: "-",
+    currentStage: "-",
     startDate: "2024-08-15",
     estimatedEndDate: "2024-09-08",
     createdBy: "سارة أحمد",
     createdAt: "2024-08-02",
     customer: "متجر ملابس النوم",
     orderNumber: "SO-2024-128",
+    productionLine: "خط الإنتاج 3",
+    supervisor: "سارة أحمد",
+    salesOrder: "SO-2024-128",
+    targetWarehouse: "مستودع المنتجات الجاهزة",
+    estimatedTime: "25 يوم",
+    remainingTime: "25 يوم",
+    notes: "متوقف بسبب نقص في المواد الخام",
     holdReason: "نقص في المواد الخام",
   },
 ];
@@ -237,7 +295,7 @@ const ProductionOrders = () => {
     .filter((order) => {
       const matchesSearch =
         order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -260,8 +318,8 @@ const ProductionOrders = () => {
         comparison = new Date(a.dueDate) - new Date(b.dueDate);
       } else if (sortField === "id") {
         comparison = a.id.localeCompare(b.id);
-      } else if (sortField === "product") {
-        comparison = a.product.localeCompare(b.product);
+      } else if (sortField === "productName") {
+        comparison = a.productName.localeCompare(b.productName);
       } else if (sortField === "quantity") {
         comparison = a.quantity - b.quantity;
       } else if (sortField === "progress") {
@@ -284,13 +342,13 @@ const ProductionOrders = () => {
   // Get status badge class
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case "completed":
+      case "مكتمل":
         return "bg-green-100 text-green-800";
-      case "in-progress":
+      case "قيد التنفيذ":
         return "bg-blue-100 text-blue-800";
-      case "planned":
+      case "قيد الانتظار":
         return "bg-amber-100 text-amber-800";
-      case "on-hold":
+      case "متوقف":
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -300,13 +358,13 @@ const ProductionOrders = () => {
   // Get status text in Arabic
   const getStatusText = (status) => {
     switch (status) {
-      case "completed":
+      case "مكتمل":
         return "مكتمل";
-      case "in-progress":
+      case "قيد التنفيذ":
         return "قيد التنفيذ";
-      case "planned":
-        return "مخطط";
-      case "on-hold":
+      case "قيد الانتظار":
+        return "قيد الانتظار";
+      case "متوقف":
         return "متوقف";
       default:
         return status;
@@ -392,10 +450,10 @@ const ProductionOrders = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="completed">مكتمل</SelectItem>
-                <SelectItem value="in-progress">قيد التنفيذ</SelectItem>
-                <SelectItem value="planned">مخطط</SelectItem>
-                <SelectItem value="on-hold">متوقف</SelectItem>
+                <SelectItem value="مكتمل">مكتمل</SelectItem>
+                <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
+                <SelectItem value="قيد الانتظار">قيد الانتظار</SelectItem>
+                <SelectItem value="متوقف">متوقف</SelectItem>
               </SelectContent>
             </Select>
 
@@ -484,10 +542,10 @@ const ProductionOrders = () => {
                   </TableHead>
                   <TableHead
                     className="cursor-pointer"
-                    onClick={() => handleSortChange("product")}
+                    onClick={() => handleSortChange("productName")}
                   >
                     <div className="flex items-center">
-                      المنتج {getSortIcon("product")}
+                      المنتج {getSortIcon("productName")}
                     </div>
                   </TableHead>
                   <TableHead
@@ -530,9 +588,13 @@ const ProductionOrders = () => {
               <TableBody>
                 {filteredOrders.length > 0 ? (
                   filteredOrders.map((order) => (
-                    <TableRow key={order.id}>
+                    <TableRow
+                      key={order.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleOrderSelect(order)}
+                    >
                       <TableCell className="font-medium">{order.id}</TableCell>
-                      <TableCell>{order.product}</TableCell>
+                      <TableCell>{order.productName}</TableCell>
                       <TableCell>
                         {order.completedQuantity}/{order.quantity}
                       </TableCell>
@@ -560,11 +622,17 @@ const ProductionOrders = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div
+                          className="flex items-center gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleOrderSelect(order)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOrderSelect(order);
+                            }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -611,144 +679,11 @@ const ProductionOrders = () => {
 
       {/* Order Details Dialog */}
       {selectedOrder && (
-        <Dialog open={showOrderDetails} onOpenChange={setShowOrderDetails}>
-          <DialogContent className="sm:max-w-[700px]">
-            <DialogHeader>
-              <DialogTitle>تفاصيل أمر الإنتاج {selectedOrder.id}</DialogTitle>
-              <DialogDescription>
-                عرض تفاصيل أمر الإنتاج والتقدم الحالي
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات أساسية
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">رقم الأمر:</div>
-                    <div>{selectedOrder.id}</div>
-                    <div className="font-medium">المنتج:</div>
-                    <div>{selectedOrder.product}</div>
-                    <div className="font-medium">الكمية:</div>
-                    <div>
-                      {selectedOrder.completedQuantity}/{selectedOrder.quantity}
-                    </div>
-                    <div className="font-medium">تاريخ التسليم:</div>
-                    <div>{formatDate(selectedOrder.dueDate)}</div>
-                    <div className="font-medium">الحالة:</div>
-                    <div>
-                      <Badge
-                        className={getStatusBadgeClass(selectedOrder.status)}
-                      >
-                        {getStatusText(selectedOrder.status)}
-                      </Badge>
-                    </div>
-                    <div className="font-medium">الأولوية:</div>
-                    <div>
-                      <Badge
-                        className={getPriorityBadgeClass(
-                          selectedOrder.priority,
-                        )}
-                      >
-                        {selectedOrder.priority}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات العميل
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">العميل:</div>
-                    <div>{selectedOrder.customer}</div>
-                    <div className="font-medium">رقم طلب المبيعات:</div>
-                    <div>{selectedOrder.orderNumber}</div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات الإنشاء
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">تم الإنشاء بواسطة:</div>
-                    <div>{selectedOrder.createdBy}</div>
-                    <div className="font-medium">تاريخ الإنشاء:</div>
-                    <div>{formatDate(selectedOrder.createdAt)}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    معلومات التنفيذ
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="font-medium">مركز العمل الحالي:</div>
-                    <div>{selectedOrder.workCenter}</div>
-                    <div className="font-medium">العملية الحالية:</div>
-                    <div>{selectedOrder.currentOperation}</div>
-                    <div className="font-medium">تاريخ البدء:</div>
-                    <div>{formatDate(selectedOrder.startDate)}</div>
-                    <div className="font-medium">تاريخ الانتهاء المتوقع:</div>
-                    <div>{formatDate(selectedOrder.estimatedEndDate)}</div>
-                    {selectedOrder.completedDate && (
-                      <>
-                        <div className="font-medium">تاريخ الإكمال:</div>
-                        <div>{formatDate(selectedOrder.completedDate)}</div>
-                      </>
-                    )}
-                    {selectedOrder.holdReason && (
-                      <>
-                        <div className="font-medium">سبب التوقف:</div>
-                        <div>{selectedOrder.holdReason}</div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                    التقدم
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>نسبة الإكمال:</span>
-                      <span>{selectedOrder.progress}%</span>
-                    </div>
-                    <Progress value={selectedOrder.progress} className="h-2" />
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <div className="flex gap-2 justify-end">
-                    <Button variant="outline">
-                      <Edit className="ml-1 h-3 w-3" />
-                      تعديل
-                    </Button>
-                    <Button variant="outline">
-                      <Workflow className="ml-1 h-3 w-3" />
-                      تتبع العمليات
-                    </Button>
-                    <Button variant="outline">
-                      <Truck className="ml-1 h-3 w-3" />
-                      المواد
-                    </Button>
-                    <Button variant="outline">
-                      <BarChart className="ml-1 h-3 w-3" />
-                      التقارير
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ProductionOrderDetails
+          open={showOrderDetails}
+          onClose={() => setShowOrderDetails(false)}
+          order={selectedOrder}
+        />
       )}
 
       {/* Add Order Dialog */}
@@ -922,7 +857,7 @@ const ProductionOrders = () => {
                 <h3 className="text-2xl font-bold mt-2">
                   {
                     productionOrdersData.filter(
-                      (order) => order.status === "in-progress",
+                      (order) => order.status === "قيد التنفيذ",
                     ).length
                   }
                 </h3>
@@ -942,7 +877,7 @@ const ProductionOrders = () => {
                 <h3 className="text-2xl font-bold mt-2">
                   {
                     productionOrdersData.filter(
-                      (order) => order.status === "completed",
+                      (order) => order.status === "مكتمل",
                     ).length
                   }
                 </h3>
@@ -964,7 +899,7 @@ const ProductionOrders = () => {
                     productionOrdersData.filter(
                       (order) =>
                         new Date(order.dueDate) < new Date() &&
-                        order.status !== "completed",
+                        order.status !== "مكتمل",
                     ).length
                   }
                 </h3>

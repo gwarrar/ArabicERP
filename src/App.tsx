@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { useRoutes, Routes, Route } from "react-router-dom";
 import Home from "./components/home";
 import Dashboard from "./pages/dashboard";
@@ -16,20 +16,54 @@ import HRPage from "./pages/hr";
 import HRPerformance from "./pages/hr/performance";
 import HRAttendance from "./pages/hr/attendance";
 import HRPerformanceTable from "./pages/hr/performance-table";
+import SaaSAdminPage from "./pages/saas-admin";
+import WorkflowPage from "./pages/workflow";
+import WorkflowDesignerPage from "./pages/workflow/designer";
+import WorkflowEnginePage from "./pages/workflow/engine";
+import WorkflowIntegrationPage from "./pages/workflow/integration";
+import SalesInvoiceRFIDPage from "./pages/sales/invoice-rfid";
+import RFIDSalesIntegrationPage from "./pages/sales/rfid-integration";
+import StockTransferPage from "./pages/inventory/stock-transfer";
+import AIAssistantPage from "./pages/ai-assistant";
 import routes from "tempo-routes";
 
+// Lazy load the RFID management page
+const RFIDManagementPage = lazy(
+  () => import("./pages/inventory/rfid-management"),
+);
+
 function App() {
+  // Render Tempo routes conditionally
+  const tempoRoutes =
+    import.meta.env.VITE_TEMPO === "true" ? useRoutes(routes) : null;
+
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+    <>
+      {tempoRoutes}
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/accounting" element={<Accounting />} />
           <Route path="/sales" element={<Sales />} />
+          <Route
+            path="/sales/invoice-rfid"
+            element={<SalesInvoiceRFIDPage />}
+          />
+          <Route
+            path="/sales/rfid-integration"
+            element={<RFIDSalesIntegrationPage />}
+          />
           <Route path="/purchases" element={<Purchases />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route
+            path="/inventory/stock-transfer"
+            element={<StockTransferPage />}
+          />
+          <Route
+            path="/inventory/rfid-management"
+            element={<RFIDManagementPage />}
+          />
           <Route path="/manufacturing" element={<Manufacturing />} />
           <Route path="/crm" element={<CRM />} />
           <Route path="/hr" element={<HRPage />} />
@@ -43,12 +77,21 @@ function App() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/saas-admin" element={<SaaSAdminPage />} />
+          <Route path="/workflow" element={<WorkflowPage />} />
+          <Route path="/workflow/designer" element={<WorkflowDesignerPage />} />
+          <Route path="/workflow/engine" element={<WorkflowEnginePage />} />
+          <Route
+            path="/workflow/integration"
+            element={<WorkflowIntegrationPage />}
+          />
+          <Route path="/ai-assistant" element={<AIAssistantPage />} />
           {import.meta.env.VITE_TEMPO === "true" && (
-            <Route path="/tempobook/*" />
+            <Route path="/tempobook/*" element={<div />} />
           )}
         </Routes>
-      </>
-    </Suspense>
+      </Suspense>
+    </>
   );
 }
 

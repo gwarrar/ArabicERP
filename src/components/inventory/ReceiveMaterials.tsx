@@ -51,7 +51,9 @@ import {
   CheckCircle,
   TrendingDown,
   TrendingUp,
+  QrCode,
 } from "lucide-react";
+import RFIDPrintService from "./RFIDPrintService";
 
 // Sample data for containers
 const containersData = [
@@ -306,6 +308,13 @@ const ReceiveMaterials = () => {
   // State for shortages
   const [shortages, setShortages] = useState<SummaryItem[]>([]);
 
+  // State for RFID print dialog
+  const [showRFIDPrintDialog, setShowRFIDPrintDialog] =
+    useState<boolean>(false);
+
+  // State for auto-print RFID tags
+  const [autoPrintRFID, setAutoPrintRFID] = useState<boolean>(true);
+
   // Ref for roll length input to focus after adding a roll
   const rollLengthInputRef = useRef<HTMLInputElement>(null);
 
@@ -455,9 +464,15 @@ const ReceiveMaterials = () => {
       rollLengthInputRef.current.focus();
     }
 
-    // Show print preview for the new roll
-    setSelectedRoll(newRoll);
-    setShowPrintPreview(true);
+    // If auto-print is enabled, open RFID print dialog
+    if (autoPrintRFID) {
+      setSelectedRoll(newRoll);
+      setShowRFIDPrintDialog(true);
+    } else {
+      // Otherwise show the standard print preview
+      setSelectedRoll(newRoll);
+      setShowPrintPreview(true);
+    }
   };
 
   // Function to handle roll length input keypress
@@ -472,7 +487,7 @@ const ReceiveMaterials = () => {
   // Function to handle printing a roll label
   const handlePrintLabel = (roll: RollData) => {
     setSelectedRoll(roll);
-    setShowPrintPreview(true);
+    setShowRFIDPrintDialog(true);
   };
 
   // Function to actually print the label
@@ -492,6 +507,12 @@ const ReceiveMaterials = () => {
   // Function to delete a roll
   const handleDeleteRoll = (rollId: string) => {
     setRolls(rolls.filter((roll) => roll.id !== rollId));
+  };
+
+  // Function to handle RFID print success
+  const handleRFIDPrintSuccess = (tagId: string) => {
+    console.log(`تم طباعة تاج RFID بنجاح: ${tagId}`);
+    // Here you would update the roll with the RFID tag ID in a real application
   };
 
   // Calculate summary data with expected quantities
@@ -974,6 +995,19 @@ const ReceiveMaterials = () => {
                   <li>سيعود المؤشر تلقائياً لإدخال رول جديد</li>
                 </ul>
               </div>
+
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <input
+                  type="checkbox"
+                  id="printRFIDTag"
+                  className="h-4 w-4"
+                  checked={autoPrintRFID}
+                  onChange={(e) => setAutoPrintRFID(e.target.checked)}
+                />
+                <Label htmlFor="printRFIDTag" className="text-sm font-normal">
+                  طباعة تاج RFID تلقائياً بعد الإضافة
+                </Label>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -1035,6 +1069,15 @@ const ReceiveMaterials = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handlePrintLabel(roll)}
+                            title="طباعة تاج RFID"
+                          >
+                            <Tag className="h-4 w-4 text-blue-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowPrintPreview(true)}
+                            title="طباعة لصاقة QR"
                           >
                             <Printer className="h-4 w-4 text-blue-600" />
                           </Button>
@@ -1042,6 +1085,7 @@ const ReceiveMaterials = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteRoll(roll.id)}
+                            title="حذف الرولون"
                           >
                             <Trash className="h-4 w-4 text-red-500" />
                           </Button>
@@ -1374,6 +1418,18 @@ const ReceiveMaterials = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handlePrintLabel(roll)}
+                            title="طباعة تاج RFID"
+                          >
+                            <Tag className="h-4 w-4 text-blue-600" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedRoll(roll);
+                              setShowPrintPreview(true);
+                            }}
+                            title="طباعة لصاقة QR"
                           >
                             <Printer className="h-4 w-4 text-blue-600" />
                           </Button>
@@ -1381,6 +1437,7 @@ const ReceiveMaterials = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteRoll(roll.id)}
+                            title="حذف الرولون"
                           >
                             <Trash className="h-4 w-4 text-red-500" />
                           </Button>
@@ -1677,6 +1734,14 @@ const ReceiveMaterials = () => {
           </div>
         </div>
       )}
+
+      {/* RFID Print Service Dialog */}
+      <RFIDPrintService
+        open={showRFIDPrintDialog}
+        onClose={() => setShowRFIDPrintDialog(false)}
+        rollData={selectedRoll}
+        onPrintSuccess={handleRFIDPrintSuccess}
+      />
 
       {/* Receiving Report Dialog - Always render but control visibility with isOpen prop */}
       <ReceivingReport

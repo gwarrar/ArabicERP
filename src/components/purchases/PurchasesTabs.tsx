@@ -3,14 +3,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PurchasesDashboard from "./PurchasesDashboard";
 import PurchaseOrdersList from "./PurchaseOrdersList";
 import SuppliersList from "./SuppliersList";
-import PurchaseInvoicesList from "./PurchaseInvoicesList";
+import PurchaseInvoicesTab from "./PurchaseInvoicesTab";
 import PurchaseReports from "./PurchaseReports";
+import ContainersList from "./ContainersList";
+import ContainerReports from "./ContainerReports";
 import {
   BarChart3,
   FileText,
   ShoppingCart,
   Users,
   Receipt,
+  Ship,
+  BarChart2,
 } from "lucide-react";
 
 const PurchasesTabs = () => {
@@ -21,17 +25,21 @@ const PurchasesTabs = () => {
           <BarChart3 className="h-4 w-4 ml-2" />
           لوحة التحكم
         </TabsTrigger>
+        <TabsTrigger value="invoices">
+          <Receipt className="h-4 w-4 ml-2" />
+          المشتريات
+        </TabsTrigger>
         <TabsTrigger value="orders">
           <ShoppingCart className="h-4 w-4 ml-2" />
           طلبات الشراء
         </TabsTrigger>
+        <TabsTrigger value="containers">
+          <Ship className="h-4 w-4 ml-2" />
+          الكونتينرات
+        </TabsTrigger>
         <TabsTrigger value="suppliers">
           <Users className="h-4 w-4 ml-2" />
           الموردين
-        </TabsTrigger>
-        <TabsTrigger value="invoices">
-          <Receipt className="h-4 w-4 ml-2" />
-          فواتير المشتريات
         </TabsTrigger>
         <TabsTrigger value="reports">
           <FileText className="h-4 w-4 ml-2" />
@@ -43,16 +51,20 @@ const PurchasesTabs = () => {
         <PurchasesDashboard />
       </TabsContent>
 
+      <TabsContent value="invoices">
+        <PurchaseInvoicesTab />
+      </TabsContent>
+
       <TabsContent value="orders">
         <PurchaseOrdersList />
       </TabsContent>
 
-      <TabsContent value="suppliers">
-        <SuppliersList />
+      <TabsContent value="containers">
+        <ContainersList />
       </TabsContent>
 
-      <TabsContent value="invoices">
-        <PurchaseInvoicesList />
+      <TabsContent value="suppliers">
+        <SuppliersList />
       </TabsContent>
 
       <TabsContent value="reports">

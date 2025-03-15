@@ -27,6 +27,7 @@ import {
   Package,
   Warehouse,
 } from "lucide-react";
+import WarehouseDetails from "./WarehouseDetails";
 
 const WarehousesList = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,70 +35,125 @@ const WarehousesList = () => {
   const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
   const [showNewWarehouseDialog, setShowNewWarehouseDialog] = useState(false);
 
-  // Sample warehouses data
+  // بيانات تجريبية للمستودعات
   const warehouses = [
     {
       id: "WH-001",
       name: "المستودع الرئيسي",
-      location: "كييف، شارع الصناعة 45",
+      code: "MAIN-01",
+      type: "رئيسي",
+      address: "شارع الصناعة، المنطقة الصناعية",
+      city: "الرياض",
+      region: "المنطقة الوسطى",
+      postalCode: "12345",
+      coordinates: "24.7136, 46.6753",
       manager: "أحمد محمد",
-      itemCount: 500,
-      capacity: 1000,
-      status: "active",
-      description: "المستودع الرئيسي للشركة",
+      phone: "+966 55 123 4567",
+      email: "main.warehouse@example.com",
+      employeesCount: 15,
+      workingHours: "8:00 - 17:00",
+      area: 5000,
+      status: "نشط",
+      itemsCount: 1250,
+      value: 2500000,
     },
     {
       id: "WH-002",
       name: "مستودع المواد الخام",
-      location: "كييف، شارع التجارة 23",
-      manager: "محمد علي",
-      itemCount: 350,
-      capacity: 500,
-      status: "active",
-      description: "مستودع خاص بالمواد الخام",
+      code: "RAW-01",
+      type: "مواد خام",
+      address: "شارع الصناعة، المنطقة الصناعية",
+      city: "الرياض",
+      region: "المنطقة الوسطى",
+      postalCode: "12345",
+      coordinates: "24.7136, 46.6753",
+      manager: "خالد العبدالله",
+      phone: "+966 55 987 6543",
+      email: "raw.warehouse@example.com",
+      employeesCount: 8,
+      workingHours: "8:00 - 17:00",
+      area: 3000,
+      status: "نشط",
+      itemsCount: 450,
+      value: 1800000,
     },
     {
       id: "WH-003",
-      name: "مستودع المنتجات النهائية",
-      location: "خاركيف، شارع المعدات 12",
-      manager: "سمير حسن",
-      itemCount: 250,
-      capacity: 400,
-      status: "active",
-      description: "مستودع خاص بالمنتجات النهائية",
+      name: "مستودع المنتجات الجاهزة",
+      code: "FIN-01",
+      type: "منتجات جاهزة",
+      address: "شارع الصناعة، المنطقة الصناعية",
+      city: "الرياض",
+      region: "المنطقة الوسطى",
+      postalCode: "12345",
+      coordinates: "24.7136, 46.6753",
+      manager: "سارة الأحمد",
+      phone: "+966 55 456 7890",
+      email: "finished.warehouse@example.com",
+      employeesCount: 10,
+      workingHours: "8:00 - 17:00",
+      area: 4000,
+      status: "نشط",
+      itemsCount: 800,
+      value: 3500000,
     },
     {
       id: "WH-004",
-      name: "مستودع قطع الغيار",
-      location: "دنيبرو، شارع السلام 34",
-      manager: "خالد عبدالله",
-      itemCount: 150,
-      capacity: 300,
-      status: "active",
-      description: "مستودع خاص بقطع الغيار",
+      name: "المستودع الفرعي - جدة",
+      code: "BR-JED-01",
+      type: "فرعي",
+      address: "شارع التحلية، حي الروضة",
+      city: "جدة",
+      region: "المنطقة الغربية",
+      postalCode: "23456",
+      coordinates: "21.5433, 39.1728",
+      manager: "محمد العلي",
+      phone: "+966 55 789 0123",
+      email: "jeddah.warehouse@example.com",
+      employeesCount: 6,
+      workingHours: "8:00 - 17:00",
+      area: 2000,
+      status: "نشط",
+      itemsCount: 350,
+      value: 1200000,
     },
     {
       id: "WH-005",
-      name: "مستودع الفرع الشرقي",
-      location: "أوديسا، شارع البركة 56",
-      manager: "عمر فاروق",
-      itemCount: 100,
-      capacity: 200,
-      status: "inactive",
-      description: "مستودع فرعي في المنطقة الشرقية",
+      name: "مستودع قطع الغيار",
+      code: "SP-01",
+      type: "قطع غيار",
+      address: "شارع الصناعة، المنطقة الصناعية",
+      city: "الرياض",
+      region: "المنطقة الوسطى",
+      postalCode: "12345",
+      coordinates: "24.7136, 46.6753",
+      manager: "فهد السالم",
+      phone: "+966 55 321 7654",
+      email: "spareparts.warehouse@example.com",
+      employeesCount: 4,
+      workingHours: "8:00 - 17:00",
+      area: 1000,
+      status: "غير نشط",
+      itemsCount: 200,
+      value: 500000,
     },
   ];
 
-  // Filter warehouses based on search term
+  // تصفية المستودعات حسب البحث
   const filteredWarehouses = warehouses.filter((warehouse) => {
-    return searchTerm
-      ? warehouse.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          warehouse.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          warehouse.manager.toLowerCase().includes(searchTerm.toLowerCase())
-      : true;
+    if (searchTerm === "") return true;
+
+    return (
+      warehouse.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      warehouse.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      warehouse.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      warehouse.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      warehouse.manager.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
-  const handleWarehouseClick = (warehouse: any) => {
+  // عرض تفاصيل المستودع
+  const handleViewWarehouse = (warehouse: any) => {
     setSelectedWarehouse(warehouse);
     setShowWarehouseDetails(true);
   };
@@ -153,23 +209,23 @@ const WarehousesList = () => {
                 <TableRow
                   key={warehouse.id}
                   className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => handleWarehouseClick(warehouse)}
+                  onClick={() => handleViewWarehouse(warehouse)}
                 >
                   <TableCell className="font-medium">{warehouse.id}</TableCell>
                   <TableCell>{warehouse.name}</TableCell>
-                  <TableCell>{warehouse.location}</TableCell>
+                  <TableCell>{warehouse.city}</TableCell>
                   <TableCell>{warehouse.manager}</TableCell>
                   <TableCell className="text-center">
-                    {warehouse.itemCount}
+                    {warehouse.itemsCount}
                   </TableCell>
                   <TableCell className="text-center">
-                    {warehouse.capacity}
+                    {warehouse.area}
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 text-xs ${warehouse.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} rounded-full`}
+                      className={`px-2 py-1 text-xs ${warehouse.status === "نشط" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} rounded-full`}
                     >
-                      {warehouse.status === "active" ? "نشط" : "غير نشط"}
+                      {warehouse.status}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -177,7 +233,14 @@ const WarehousesList = () => {
                       className="flex items-center gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewWarehouse(warehouse);
+                        }}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon">
@@ -193,85 +256,13 @@ const WarehousesList = () => {
       </div>
 
       {/* Warehouse Details Dialog */}
-      <Dialog
-        open={showWarehouseDetails}
-        onOpenChange={setShowWarehouseDetails}
-      >
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>تفاصيل المستودع</DialogTitle>
-          </DialogHeader>
-          {selectedWarehouse && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">رمز المستودع</p>
-                  <p className="font-medium">{selectedWarehouse.id}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">اسم المستودع</p>
-                  <p className="font-medium">{selectedWarehouse.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الموقع</p>
-                  <p className="font-medium">{selectedWarehouse.location}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    المدير المسؤول
-                  </p>
-                  <p className="font-medium">{selectedWarehouse.manager}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">عدد الأصناف</p>
-                  <p className="font-medium">{selectedWarehouse.itemCount}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">السعة</p>
-                  <p className="font-medium">{selectedWarehouse.capacity}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">الحالة</p>
-                  <span
-                    className={`px-2 py-1 text-xs ${selectedWarehouse.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"} rounded-full`}
-                  >
-                    {selectedWarehouse.status === "active" ? "نشط" : "غير نشط"}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">نسبة الإشغال</p>
-                  <p className="font-medium">
-                    {Math.round(
-                      (selectedWarehouse.itemCount /
-                        selectedWarehouse.capacity) *
-                        100,
-                    )}
-                    %
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground">الوصف</p>
-                <p className="font-medium">{selectedWarehouse.description}</p>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowWarehouseDetails(false)}
-                >
-                  إغلاق
-                </Button>
-                <Button variant="outline">
-                  <Edit className="ml-2 h-4 w-4" />
-                  تعديل
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {selectedWarehouse && (
+        <WarehouseDetails
+          open={showWarehouseDetails}
+          onClose={() => setShowWarehouseDetails(false)}
+          warehouse={selectedWarehouse}
+        />
+      )}
 
       {/* New Warehouse Dialog */}
       <Dialog

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,6 +21,10 @@ import {
   Plus,
   FileText,
   MapPin,
+  TrendingUp,
+  Receipt,
+  Landmark,
+  BookOpen,
 } from "lucide-react";
 import {
   LineChart,
@@ -49,6 +53,7 @@ import { NewJournalEntry } from "./NewJournalEntry";
 import { CashJournal } from "./CashJournal";
 import ReactDOM from "react-dom";
 import { SheetTabs } from "@/components/ui/sheet-tabs";
+import AccountingQuickLinks from "./AccountingQuickLinks";
 
 // KPI Card Component
 const KPICard = ({
@@ -290,8 +295,133 @@ const AccountingDashboard = () => {
     );
   };
 
+  // Handlers for quick links
+  const handleOpenJournalEntries = () => {
+    // Navigate to journal-entries tab
+    document
+      .querySelector('[value="journal"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenCashJournal = () => {
+    // Open cash journal sheet
+    openTransactionSheet("cash-journal");
+  };
+
+  const handleOpenAccountTree = () => {
+    // Navigate to account-tree tab
+    document
+      .querySelector('[value="accounts"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenFinancialReports = () => {
+    // Navigate to financial-reports tab
+    document
+      .querySelector('[value="reports"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenCostCenters = () => {
+    // Navigate to cost-centers tab
+    document
+      .querySelector('[value="costcenters"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenCurrencyExchange = () => {
+    // Navigate to currency-exchange tab
+    document
+      .querySelector('[value="exchange"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
   return (
     <div className="space-y-6">
+      {/* Quick Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card className="overflow-hidden">
+          <div className="h-1 bg-blue-500"></div>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  الإيرادات (الشهر الحالي)
+                </p>
+                <h3 className="text-2xl font-bold mt-1">₴ 125,430</h3>
+                <div className="flex items-center text-xs text-green-600 mt-1">
+                  <TrendingUp className="h-3 w-3 ml-1" />
+                  +12.5% من الشهر السابق
+                </div>
+              </div>
+              <div className="p-2 bg-blue-100 rounded-full">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <div className="h-1 bg-green-500"></div>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  المصروفات (الشهر الحالي)
+                </p>
+                <h3 className="text-2xl font-bold mt-1">₴ 87,650</h3>
+                <div className="flex items-center text-xs text-red-600 mt-1">
+                  <TrendingUp className="h-3 w-3 ml-1" />
+                  +5.2% من الشهر السابق
+                </div>
+              </div>
+              <div className="p-2 bg-green-100 rounded-full">
+                <Receipt className="h-5 w-5 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <div className="h-1 bg-purple-500"></div>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-muted-foreground">الرصيد النقدي</p>
+                <h3 className="text-2xl font-bold mt-1">₴ 342,800</h3>
+                <div className="flex items-center text-xs text-muted-foreground mt-1">
+                  <Calendar className="h-3 w-3 ml-1" />
+                  تحديث: اليوم 09:30
+                </div>
+              </div>
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Landmark className="h-5 w-5 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <div className="h-1 bg-amber-500"></div>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  القيود المحاسبية
+                </p>
+                <h3 className="text-2xl font-bold mt-1">1,245</h3>
+                <div className="flex items-center text-xs text-muted-foreground mt-1">
+                  <FileText className="h-3 w-3 ml-1" />
+                  156 قيد هذا الشهر
+                </div>
+              </div>
+              <div className="p-2 bg-amber-100 rounded-full">
+                <BookOpen className="h-5 w-5 text-amber-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       {/* Filter and Quick Actions */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -439,6 +569,16 @@ const AccountingDashboard = () => {
           period="حالي"
         />
       </div>
+
+      {/* Quick Links */}
+      <AccountingQuickLinks
+        onOpenJournalEntries={handleOpenJournalEntries}
+        onOpenCashJournal={handleOpenCashJournal}
+        onOpenAccountTree={handleOpenAccountTree}
+        onOpenFinancialReports={handleOpenFinancialReports}
+        onOpenCostCenters={handleOpenCostCenters}
+        onOpenCurrencyExchange={handleOpenCurrencyExchange}
+      />
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

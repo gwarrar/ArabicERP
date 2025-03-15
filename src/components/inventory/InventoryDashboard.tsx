@@ -22,6 +22,7 @@ import {
   ArrowRightLeft,
   DollarSign,
 } from "lucide-react";
+import InventoryQuickLinks from "./InventoryQuickLinks";
 
 const InventoryDashboard = () => {
   // Sample data for charts
@@ -78,6 +79,59 @@ const InventoryDashboard = () => {
       warehouse: "مستودع المنتجات النهائية",
     },
   ];
+
+  // Handlers for quick links
+  const handleOpenContainerReceiving = () => {
+    // Navigate to receive-materials tab
+    document
+      .querySelector('[value="receive-materials"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenStockTransfer = () => {
+    // Navigate to stock transfer page
+    window.location.href = "/inventory/stock-transfer";
+  };
+
+  const handleOpenInventoryCount = () => {
+    // Navigate to inventory-count tab
+    document
+      .querySelector('[value="inventory-count"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenReservations = () => {
+    // Open reservations dialog
+    console.log("Open reservations");
+  };
+
+  const handleOpenRFIDSystem = () => {
+    // Navigate to rfid-system tab
+    document
+      .querySelector('[value="rfid-system"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenWarehouseMap = () => {
+    // Navigate to warehouse-map tab
+    document
+      .querySelector('[value="warehouse-map"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenReports = () => {
+    // Navigate to reports tab
+    document
+      .querySelector('[value="reports"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
+  const handleOpenProductCategories = () => {
+    // Navigate to enhanced-categories tab
+    document
+      .querySelector('[value="enhanced-categories"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
 
   return (
     <div className="space-y-6">
@@ -143,6 +197,18 @@ const InventoryDashboard = () => {
           </div>
         </Card>
       </div>
+
+      {/* Quick Links Section */}
+      <InventoryQuickLinks
+        onOpenContainerReceiving={handleOpenContainerReceiving}
+        onOpenStockTransfer={handleOpenStockTransfer}
+        onOpenInventoryCount={handleOpenInventoryCount}
+        onOpenReservations={handleOpenReservations}
+        onOpenRFIDSystem={handleOpenRFIDSystem}
+        onOpenWarehouseMap={handleOpenWarehouseMap}
+        onOpenReports={handleOpenReports}
+        onOpenProductCategories={handleOpenProductCategories}
+      />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
