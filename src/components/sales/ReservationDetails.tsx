@@ -199,7 +199,10 @@ const ReservationDetails: React.FC<ReservationDetailsProps> = ({
                         إجمالي المبلغ:
                       </span>
                       <span className="font-bold">
-                        {reservation.totalAmount.toLocaleString()} ₴
+                        {reservation.totalAmount
+                          ? reservation.totalAmount.toLocaleString()
+                          : "0"}{" "}
+                        ₴
                       </span>
                     </div>
                   </div>
@@ -396,10 +399,15 @@ const ReservationDetails: React.FC<ReservationDetailsProps> = ({
                       <TableCell>{item.productSku}</TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>{item.unit}</TableCell>
-                      <TableCell>{item.price.toLocaleString()} ₴</TableCell>
-                      <TableCell>{item.warehouseName}</TableCell>
+                      <TableCell>
+                        {item.price ? item.price.toLocaleString() : "0"} ₴
+                      </TableCell>
+                      <TableCell>{item.warehouseName || "-"}</TableCell>
                       <TableCell className="font-bold">
-                        {item.totalAmount.toLocaleString()} ₴
+                        {item.totalAmount
+                          ? item.totalAmount.toLocaleString()
+                          : "0"}{" "}
+                        ₴
                       </TableCell>
                     </TableRow>
                   ))}
@@ -411,7 +419,10 @@ const ReservationDetails: React.FC<ReservationDetailsProps> = ({
                       الإجمالي
                     </TableCell>
                     <TableCell className="font-bold text-lg">
-                      {reservation.totalAmount.toLocaleString()} ₴
+                      {reservation.totalAmount
+                        ? reservation.totalAmount.toLocaleString()
+                        : "0"}{" "}
+                      ₴
                     </TableCell>
                   </TableRow>
                 </TableBody>

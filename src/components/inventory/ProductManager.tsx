@@ -49,6 +49,7 @@ import {
   Eye,
   Printer,
 } from "lucide-react";
+import ProductDetails from "./ProductDetails";
 
 // Sample data for product categories
 const initialCategories = [
@@ -314,14 +315,22 @@ const ProductManager = () => {
   const [moveItemId, setMoveItemId] = useState("");
   const [moveTargetId, setMoveTargetId] = useState("");
 
-  // Fabric rolls dialog states
-  const [showFabricRollsDialog, setShowFabricRollsDialog] = useState(false);
+  // Product details dialog states
+  const [showProductDetailsDialog, setShowProductDetailsDialog] =
+    useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
-  // Open fabric rolls dialog
-  const openFabricRollsDialog = (product: any) => {
+  // Open product details dialog
+  const openProductDetailsDialog = (product: any) => {
     setSelectedProduct(product);
-    setShowFabricRollsDialog(true);
+    setShowProductDetailsDialog(true);
+  };
+
+  // Handle save pricing
+  const handleSavePricing = () => {
+    // Here you would update the product pricing in your database
+    // For now we just close the dialog
+    console.log("Pricing saved");
   };
 
   // Toggle category expansion
@@ -723,10 +732,11 @@ const ProductManager = () => {
                 <div
                   className="flex items-center flex-1 cursor-pointer"
                   style={{ paddingRight: `${level * 12}px` }}
+                  dir="rtl"
                 >
                   {hasChildren ? (
                     <button
-                      className="p-1 hover:bg-gray-200 rounded-md mr-1"
+                      className="p-1 hover:bg-gray-200 rounded-md ml-1"
                       onClick={() => toggleCategoryExpansion(category.id)}
                     >
                       {isExpanded ? (
@@ -742,12 +752,12 @@ const ProductManager = () => {
                     className="flex-1 flex items-center"
                     onClick={() => handleCategorySelect(category.id)}
                   >
-                    <FolderTree className="h-4 w-4 mr-2 text-amber-500" />
+                    <FolderTree className="h-4 w-4 ml-2 text-amber-500" />
                     <span>{category.name}</span>
                     {categoryProducts.length > 0 && (
                       <Badge
                         variant="outline"
-                        className="mr-2 text-xs bg-gray-100"
+                        className="mr-1 ml-2 text-xs bg-gray-100"
                       >
                         {categoryProducts.length}
                       </Badge>
@@ -787,7 +797,7 @@ const ProductManager = () => {
               </div>
 
               {isExpanded && (
-                <div className="mr-6">
+                <div className="mr-6" dir="rtl">
                   {renderCategoryTree(category.id, level + 1)}
 
                   {/* Products in this category */}
@@ -798,14 +808,15 @@ const ProductManager = () => {
                           key={product.id}
                           className="flex items-center py-1 px-2 rounded-md hover:bg-gray-100 cursor-pointer"
                           style={{ paddingRight: `${(level + 1) * 12}px` }}
-                          onClick={() => openFabricRollsDialog(product)}
+                          dir="rtl"
+                          onClick={() => openProductDetailsDialog(product)}
                         >
                           <div className="flex-1 flex items-center">
-                            <Package className="h-4 w-4 mr-2 text-blue-500" />
+                            <Package className="h-4 w-4 ml-2 text-blue-500" />
                             <span>{product.name}</span>
                             <Badge
                               variant="outline"
-                              className="mr-2 text-xs bg-gray-100"
+                              className="mr-1 ml-2 text-xs bg-gray-100"
                             >
                               {product.inStock} {product.unit}
                             </Badge>
@@ -935,7 +946,10 @@ const ProductManager = () => {
   // Render category cards
   const renderCategoryCards = () => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        dir="rtl"
+      >
         {categories.map((category) => {
           const parentCategory = categories.find(
             (cat) => cat.id === category.parentId,
@@ -1053,7 +1067,7 @@ const ProductManager = () => {
                   <TableRow
                     key={product.id}
                     className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => openFabricRollsDialog(product)}
+                    onClick={() => openProductDetailsDialog(product)}
                   >
                     <TableCell className="font-medium">
                       <div className="flex items-center">
@@ -1137,7 +1151,10 @@ const ProductManager = () => {
   // Render product cards
   const renderProductCards = () => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        dir="rtl"
+      >
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => {
             const category = categories.find(
@@ -1148,7 +1165,7 @@ const ProductManager = () => {
               <Card
                 key={product.id}
                 className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => openFabricRollsDialog(product)}
+                onClick={() => openProductDetailsDialog(product)}
               >
                 <div className="aspect-video relative overflow-hidden bg-gray-100">
                   {product.imageUrl ? (
@@ -1260,7 +1277,7 @@ const ProductManager = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">إدارة المنتجات والمجموعات</h2>
         <div className="flex gap-2">
@@ -1283,23 +1300,26 @@ const ProductManager = () => {
         </div>
       </div>
 
-      <Tabs value={viewMode} onValueChange={setViewMode}>
-        <TabsList>
-          <TabsTrigger value="tree">
-            <FolderTree className="h-4 w-4 ml-2" />
-            عرض شجري
+      <Tabs value={viewMode} onValueChange={setViewMode} dir="rtl">
+        <TabsList className="flex-row-reverse">
+          <TabsTrigger value="cards">
+            <Grid3X3 className="h-4 w-4 ml-2" />
+            عرض بطاقات
           </TabsTrigger>
           <TabsTrigger value="table">
             <List className="h-4 w-4 ml-2" />
             عرض جدولي
           </TabsTrigger>
-          <TabsTrigger value="cards">
-            <Grid3X3 className="h-4 w-4 ml-2" />
-            عرض بطاقات
+          <TabsTrigger value="tree">
+            <FolderTree className="h-4 w-4 ml-2" />
+            عرض شجري
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex flex-col md:flex-row justify-between gap-4 mt-4">
+        <div
+          className="flex flex-col md:flex-row-reverse justify-between gap-4 mt-4"
+          dir="rtl"
+        >
           <div className="flex flex-wrap gap-2">
             <div className="relative">
               <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -1404,7 +1424,7 @@ const ProductManager = () => {
         </div>
 
         <TabsContent value="tree" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" dir="rtl">
             <Card className="md:col-span-1 overflow-hidden">
               <CardHeader className="pb-2">
                 <CardTitle>مجموعات المنتجات</CardTitle>
@@ -1465,15 +1485,15 @@ const ProductManager = () => {
         </TabsContent>
 
         <TabsContent value="table" className="mt-6">
-          <Tabs defaultValue="categories">
-            <TabsList>
-              <TabsTrigger value="categories">
-                <FolderTree className="h-4 w-4 ml-2" />
-                المجموعات
-              </TabsTrigger>
+          <Tabs defaultValue="categories" dir="rtl">
+            <TabsList className="flex-row-reverse">
               <TabsTrigger value="products">
                 <Package className="h-4 w-4 ml-2" />
                 المنتجات
+              </TabsTrigger>
+              <TabsTrigger value="categories">
+                <FolderTree className="h-4 w-4 ml-2" />
+                المجموعات
               </TabsTrigger>
             </TabsList>
 
@@ -1488,15 +1508,15 @@ const ProductManager = () => {
         </TabsContent>
 
         <TabsContent value="cards" className="mt-6">
-          <Tabs defaultValue="categories">
-            <TabsList>
-              <TabsTrigger value="categories">
-                <FolderTree className="h-4 w-4 ml-2" />
-                المجموعات
-              </TabsTrigger>
+          <Tabs defaultValue="categories" dir="rtl">
+            <TabsList className="flex-row-reverse">
               <TabsTrigger value="products">
                 <Package className="h-4 w-4 ml-2" />
                 المنتجات
+              </TabsTrigger>
+              <TabsTrigger value="categories">
+                <FolderTree className="h-4 w-4 ml-2" />
+                المجموعات
               </TabsTrigger>
             </TabsList>
 
@@ -1873,177 +1893,15 @@ const ProductManager = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Fabric Rolls Dialog */}
-      <Dialog
-        open={showFabricRollsDialog}
-        onOpenChange={setShowFabricRollsDialog}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">
-              {selectedProduct
-                ? `رولونات ${selectedProduct.name}`
-                : "تفاصيل الرولونات"}
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedProduct && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
-                <div className="h-16 w-16 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Package className="h-8 w-8 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">
-                    {selectedProduct.name}
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>الرمز: {selectedProduct.sku}</span>
-                    <span>•</span>
-                    <span>
-                      المخزون: {selectedProduct.inStock} {selectedProduct.unit}
-                    </span>
-                  </div>
-                </div>
-                <Badge
-                  className={
-                    selectedProduct.inStock <= 0
-                      ? "bg-red-100 text-red-800"
-                      : selectedProduct.inStock <= selectedProduct.minStock
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-green-100 text-green-800"
-                  }
-                >
-                  {selectedProduct.inStock <= 0
-                    ? "نفذ من المخزون"
-                    : selectedProduct.inStock <= selectedProduct.minStock
-                      ? "مخزون منخفض"
-                      : "متوفر"}
-                </Badge>
-              </div>
-
-              <div className="border rounded-lg">
-                <div className="p-4 border-b bg-muted/50">
-                  <h4 className="font-medium">رولونات القماش المتوفرة</h4>
-                </div>
-
-                <ScrollArea className="h-[400px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>رقم الرولون</TableHead>
-                        <TableHead>الطول</TableHead>
-                        <TableHead>العرض</TableHead>
-                        <TableHead>اللون</TableHead>
-                        <TableHead>الموقع</TableHead>
-                        <TableHead>الحالة</TableHead>
-                        <TableHead>تاريخ الاستلام</TableHead>
-                        <TableHead>الإجراءات</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {/* Generate sample fabric rolls based on product */}
-                      {Array.from(
-                        {
-                          length: Math.max(
-                            1,
-                            Math.floor(selectedProduct.inStock / 10),
-                          ),
-                        },
-                        (_, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="font-medium">{`${selectedProduct.sku}-R${String(i + 1).padStart(3, "0")}`}</TableCell>
-                            <TableCell>{`${Math.floor(30 + Math.random() * 20)} متر`}</TableCell>
-                            <TableCell>{`${Math.floor(140 + Math.random() * 20)} سم`}</TableCell>
-                            <TableCell>
-                              {selectedProduct.tags &&
-                              selectedProduct.tags.length > 0
-                                ? selectedProduct.tags[
-                                    Math.floor(
-                                      Math.random() *
-                                        selectedProduct.tags.length,
-                                    )
-                                  ]
-                                : "أبيض"}
-                            </TableCell>
-                            <TableCell>{`المستودع الرئيسي - رف ${String.fromCharCode(65 + Math.floor(Math.random() * 6))}${Math.floor(Math.random() * 10)}`}</TableCell>
-                            <TableCell>
-                              <Badge
-                                className={
-                                  Math.random() > 0.2
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-amber-100 text-amber-800"
-                                }
-                              >
-                                {Math.random() > 0.2 ? "متوفر" : "قيد الفحص"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {new Date(
-                                Date.now() -
-                                  Math.floor(Math.random() * 30) *
-                                    24 *
-                                    60 *
-                                    60 *
-                                    1000,
-                              ).toLocaleDateString("ar-SA")}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="sm">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-500"
-                                >
-                                  <Trash className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ),
-                      )}
-                      {selectedProduct.inStock <= 0 && (
-                        <TableRow>
-                          <TableCell
-                            colSpan={8}
-                            className="text-center py-8 text-muted-foreground"
-                          >
-                            لا توجد رولونات متوفرة لهذا المنتج
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-muted-foreground">
-                  {selectedProduct.inStock > 0
-                    ? `إجمالي ${Math.max(1, Math.floor(selectedProduct.inStock / 10))} رولون بإجمالي ${selectedProduct.inStock} ${selectedProduct.unit}`
-                    : "لا توجد رولونات متوفرة"}
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Printer className="h-4 w-4 ml-2" />
-                    طباعة التقرير
-                  </Button>
-                  <Button>
-                    <Plus className="h-4 w-4 ml-2" />
-                    إضافة رولون جديد
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Product Details Dialog */}
+      {selectedProduct && (
+        <ProductDetails
+          open={showProductDetailsDialog}
+          onClose={() => setShowProductDetailsDialog(false)}
+          product={selectedProduct}
+          onSavePricing={handleSavePricing}
+        />
+      )}
     </div>
   );
 };

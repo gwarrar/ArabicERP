@@ -14,6 +14,7 @@ import {
   Truck,
   Package,
   Clock,
+  Box,
 } from "lucide-react";
 
 interface SalesQuickLinksProps {
@@ -24,6 +25,7 @@ interface SalesQuickLinksProps {
   onProcessReturn?: () => void;
   onViewReports?: () => void;
   onOpenRFID?: () => void;
+  onOpenContainerReservation?: () => void;
 }
 
 const SalesQuickLinks: React.FC<SalesQuickLinksProps> = ({
@@ -34,6 +36,7 @@ const SalesQuickLinks: React.FC<SalesQuickLinksProps> = ({
   onProcessReturn,
   onViewReports,
   onOpenRFID,
+  onOpenContainerReservation,
 }) => {
   // تنفيذ الإجراء مع التحقق من وجود الدالة
   const handleAction = (action?: () => void) => {
@@ -74,6 +77,15 @@ const SalesQuickLinks: React.FC<SalesQuickLinksProps> = ({
           >
             <Bookmark className="h-8 w-8 mb-2 text-purple-600" />
             <span className="text-sm font-medium">الحجوزات</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            className="h-auto flex flex-col items-center justify-center p-4 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 transition-colors"
+            onClick={() => handleAction(onOpenContainerReservation)}
+          >
+            <Box className="h-8 w-8 mb-2 text-indigo-600" />
+            <span className="text-sm font-medium">حجز من حاوية</span>
           </Button>
 
           <Button

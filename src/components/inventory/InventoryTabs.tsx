@@ -15,8 +15,8 @@ import {
   Truck,
   Clipboard,
   Tag,
-  Bookmark,
   Boxes,
+  DollarSign,
 } from "lucide-react";
 
 const InventoryDashboard = lazy(() => import("./InventoryDashboard"));
@@ -33,7 +33,7 @@ const WarehouseMap = lazy(() => import("./WarehouseMap"));
 const ReceiveMaterials = lazy(() => import("./ReceiveMaterials"));
 const InventoryCount = lazy(() => import("./InventoryCount"));
 const EnhancedWarehouseMap = lazy(() => import("./EnhancedWarehouseMap"));
-const InventoryQuickLinks = lazy(() => import("./InventoryQuickLinks"));
+const PricingInventory = lazy(() => import("./PricingInventory"));
 
 // Loading skeleton for tab content
 const LoadingSkeleton = () => {
@@ -110,6 +110,13 @@ const InventoryTabs = () => {
       ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   };
 
+  const handleOpenPricing = () => {
+    // Navigate to pricing tab
+    document
+      .querySelector('[value="pricing"]')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  };
+
   return (
     <Tabs defaultValue="dashboard" className="w-full" dir="rtl">
       <div className="border-b mb-6 bg-muted rounded-md p-2">
@@ -140,6 +147,10 @@ const InventoryTabs = () => {
               <FileText className="h-4 w-4 ml-2" />
               التقارير
             </TabsTrigger>
+            <TabsTrigger value="pricing">
+              <DollarSign className="h-4 w-4 ml-2" />
+              الأسعار والعروض
+            </TabsTrigger>
           </TabsList>
 
           {/* الصف الثاني من التبويبات */}
@@ -163,10 +174,6 @@ const InventoryTabs = () => {
             <TabsTrigger value="warehouse-map">
               <Map className="h-4 w-4 ml-2" />
               خريطة المستودع
-            </TabsTrigger>
-            <TabsTrigger value="quick-links">
-              <Bookmark className="h-4 w-4 ml-2" />
-              روابط سريعة
             </TabsTrigger>
           </TabsList>
         </div>
@@ -244,18 +251,9 @@ const InventoryTabs = () => {
         </Suspense>
       </TabsContent>
 
-      <TabsContent value="quick-links">
+      <TabsContent value="pricing">
         <Suspense fallback={<LoadingSkeleton />}>
-          <InventoryQuickLinks
-            onOpenContainerReceiving={handleOpenContainerReceiving}
-            onOpenStockTransfer={handleOpenStockTransfer}
-            onOpenInventoryCount={handleOpenInventoryCount}
-            onOpenReservations={handleOpenReservations}
-            onOpenRFIDSystem={handleOpenRFIDSystem}
-            onOpenWarehouseMap={handleOpenWarehouseMap}
-            onOpenReports={handleOpenReports}
-            onOpenProductCategories={handleOpenProductCategories}
-          />
+          <PricingInventory />
         </Suspense>
       </TabsContent>
     </Tabs>

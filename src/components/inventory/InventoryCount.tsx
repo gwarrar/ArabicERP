@@ -982,7 +982,20 @@ const InventoryCount = () => {
                 if (inventoryMethod === "rfid") {
                   setShowRFIDScanner(true);
                 } else {
-                  // الانتقال إلى واجهة الجرد اليدوي
+                  // الانتقال إلى واجهة الجرد اليدوي مع إنشاء جلسة جديدة
+                  const newSession = {
+                    id: `INV-COUNT-${Date.now().toString().slice(-6)}`,
+                    name: "جلسة جرد جديدة",
+                    date: new Date().toISOString().split("T")[0],
+                    status: "جاري",
+                    type: "جزئي",
+                    location: "المستودع الرئيسي",
+                    itemsCount: currentCountItems.length,
+                    progress: 0,
+                    assignedTo: "أحمد محمد",
+                    discrepancies: 0,
+                  };
+                  setSelectedSession(newSession);
                   setActiveTab("current");
                 }
               }}

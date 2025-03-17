@@ -18,6 +18,7 @@ import {
   Search,
   Map,
   Boxes,
+  DollarSign,
 } from "lucide-react";
 
 interface InventoryQuickLinksProps {
@@ -29,6 +30,7 @@ interface InventoryQuickLinksProps {
   onOpenWarehouseMap?: () => void;
   onOpenReports?: () => void;
   onOpenProductCategories?: () => void;
+  onOpenPricing?: () => void;
 }
 
 const InventoryQuickLinks: React.FC<InventoryQuickLinksProps> = ({
@@ -40,6 +42,7 @@ const InventoryQuickLinks: React.FC<InventoryQuickLinksProps> = ({
   onOpenWarehouseMap,
   onOpenReports,
   onOpenProductCategories,
+  onOpenPricing,
 }) => {
   // تنفيذ الإجراء مع التحقق من وجود الدالة
   const handleAction = (action?: () => void) => {
@@ -125,6 +128,15 @@ const InventoryQuickLinks: React.FC<InventoryQuickLinksProps> = ({
           >
             <Boxes className="h-8 w-8 mb-2 text-teal-600" />
             <span className="text-sm font-medium">مجموعات المنتجات</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            className="h-auto flex flex-col items-center justify-center p-4 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 transition-colors"
+            onClick={() => handleAction(onOpenPricing)}
+          >
+            <DollarSign className="h-8 w-8 mb-2 text-orange-600" />
+            <span className="text-sm font-medium">الأسعار والعروض</span>
           </Button>
         </div>
 

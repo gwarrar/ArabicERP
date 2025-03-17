@@ -220,6 +220,7 @@ const sampleReservations: Reservation[] = [
 interface ReservationsListProps {
   open: boolean;
   onClose: () => void;
+  reservation?: Reservation | null;
 }
 
 const ReservationsList: React.FC<ReservationsListProps> = ({

@@ -1,0 +1,10 @@
+import React from 'react';
+import ContainerReservationInvoice from '@/components/sales/ContainerReservationInvoice';
+
+export default function ContainerReservationInvoicePreview() {
+  return (
+    <div className="bg-white p-4 rounded-md">
+      <ContainerReservationInvoice />
+    </div>
+  );
+}

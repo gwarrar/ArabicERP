@@ -168,31 +168,6 @@ const getIconByName = (iconName: string) => {
   return iconComponents[iconName] || <FileText />;
 };
 
-const getColorClass = (color: string) => {
-  switch (color) {
-    case "blue":
-      return "bg-blue-100 text-blue-600 hover:bg-blue-200";
-    case "green":
-      return "bg-green-100 text-green-600 hover:bg-green-200";
-    case "purple":
-      return "bg-purple-100 text-purple-600 hover:bg-purple-200";
-    case "amber":
-      return "bg-amber-100 text-amber-600 hover:bg-amber-200";
-    case "indigo":
-      return "bg-indigo-100 text-indigo-600 hover:bg-indigo-200";
-    case "cyan":
-      return "bg-cyan-100 text-cyan-600 hover:bg-cyan-200";
-    case "pink":
-      return "bg-pink-100 text-pink-600 hover:bg-pink-200";
-    case "gray":
-      return "bg-gray-100 text-gray-600 hover:bg-gray-200";
-    case "red":
-      return "bg-red-100 text-red-600 hover:bg-red-200";
-    default:
-      return "bg-blue-100 text-blue-600 hover:bg-blue-200";
-  }
-};
-
 const QuickLinks = () => {
   // استخدام localStorage لتخزين الروابط المخصصة (في تطبيق حقيقي، يمكن استخدام API)
   const [links, setLinks] = useState<QuickLink[]>(defaultLinks);
@@ -282,10 +257,17 @@ const QuickLinks = () => {
       ? links
       : links.filter((link) => link.category === selectedCategory);
 
+  // تنفيذ الإجراء مع التحقق من وجود الدالة
+  const handleAction = (action?: () => void) => {
+    if (action) {
+      action();
+    }
+  };
+
   return (
-    <Card className="w-full">
+    <Card className="bg-white dark:bg-[#1e1e2d] dark:text-white">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-medium">روابط سريعة</CardTitle>
+        <CardTitle className="text-lg font-bold">روابط سريعة</CardTitle>
         <div className="flex items-center gap-2">
           {showCustomizeMode ? (
             <>
@@ -345,7 +327,7 @@ const QuickLinks = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredLinks.map((link) => (
             <div key={link.id} className="relative">
               {showCustomizeMode && (
@@ -368,8 +350,9 @@ const QuickLinks = () => {
                   </Button>
                 </div>
               )}
-              <a
-                href={link.url}
+              <Button
+                variant="outline"
+                className={`h-auto w-full flex flex-col items-center justify-center p-4 hover:bg-${link.color}-50 hover:text-${link.color}-700 hover:border-${link.color}-200 transition-colors ${showCustomizeMode ? "pointer-events-none" : "cursor-pointer"}`}
                 onClick={(e) => {
                   if (showCustomizeMode) {
                     e.preventDefault();
@@ -413,22 +396,69 @@ const QuickLinks = () => {
                     window.location.href = link.url;
                   }
                 }}
-                className={`flex flex-col items-center justify-center p-4 rounded-lg transition-colors ${getColorClass(
-                  link.color,
-                )} ${showCustomizeMode ? "pointer-events-none" : "cursor-pointer"}`}
               >
-                <div className="text-2xl mb-2">{getIconByName(link.icon)}</div>
-                <span className="text-sm font-medium text-center">
-                  {link.title}
-                </span>
+                <div className={`h-8 w-8 mb-2 text-${link.color}-600`}>
+                  {getIconByName(link.icon)}
+                </div>
+                <span className="text-sm font-medium">{link.title}</span>
                 {showCustomizeMode && (
                   <Badge variant="outline" className="mt-2 text-xs bg-white/50">
                     {link.category}
                   </Badge>
                 )}
-              </a>
+              </Button>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6">
+          <h3 className="text-sm font-medium mb-3">معاملات حديثة</h3>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-2 rounded-md border hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 rounded-md ml-3">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">فاتورة #INV-2024-0042</p>
+                  <p className="text-xs text-muted-foreground">
+                    شركة الأمل للتجارة
+                  </p>
+                </div>
+              </div>
+              <div className="text-sm font-medium">₴ 12,500</div>
+            </div>
+
+            <div className="flex items-center justify-between p-2 rounded-md border hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 rounded-md ml-3">
+                  <ShoppingCart className="h-4 w-4 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">طلب #ORD-2024-0078</p>
+                  <p className="text-xs text-muted-foreground">
+                    مؤسسة النور للأقمشة
+                  </p>
+                </div>
+              </div>
+              <div className="text-sm font-medium">₴ 8,750</div>
+            </div>
+
+            <div className="flex items-center justify-between p-2 rounded-md border hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 rounded-md ml-3">
+                  <Clipboard className="h-4 w-4 text-purple-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">حجز #RES-2024-0015</p>
+                  <p className="text-xs text-muted-foreground">
+                    شركة الخليج للملابس
+                  </p>
+                </div>
+              </div>
+              <div className="text-sm font-medium">₴ 15,200</div>
+            </div>
+          </div>
         </div>
       </CardContent>
 

@@ -14,6 +14,7 @@ import {
   Clipboard,
   Settings,
   Trophy,
+  UserPlus,
 } from "lucide-react";
 import EmployeePerformanceSystem from "./EmployeePerformanceSystem";
 import EmployeePerformanceTable from "./EmployeePerformanceTable";
@@ -22,6 +23,7 @@ import HRDashboard from "./HRDashboard";
 import EmployeeList from "./EmployeeList";
 import RecruitmentManagement from "./RecruitmentManagement";
 import PerformanceRewardsTab from "./PerformanceRewardsTab";
+import AgentManagement from "./AgentManagement";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const HRTabs = () => {
@@ -38,6 +40,10 @@ const HRTabs = () => {
             <TabsTrigger value="employees">
               <Users className="h-4 w-4 ml-2" />
               الموظفين
+            </TabsTrigger>
+            <TabsTrigger value="agents">
+              <UserPlus className="h-4 w-4 ml-2" />
+              الوكلاء
             </TabsTrigger>
             <TabsTrigger value="performance-rewards">
               <Trophy className="h-4 w-4 ml-2" />
@@ -88,6 +94,10 @@ const HRTabs = () => {
 
         <TabsContent value="employees">
           <EmployeeList />
+        </TabsContent>
+
+        <TabsContent value="agents">
+          <AgentManagement />
         </TabsContent>
 
         <TabsContent value="performance-rewards">

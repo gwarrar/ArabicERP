@@ -20,6 +20,7 @@ import {
   TrendingDown,
   GitBranch,
   Sparkles,
+  Briefcase,
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -124,6 +125,12 @@ const Sidebar = () => {
           label="الموارد البشرية"
           href="/hr"
           active={isActive("/hr")}
+        />
+        <SidebarItem
+          icon={<Briefcase className="h-5 w-5" />}
+          label="المشاريع"
+          href="/projects"
+          active={isActive("/projects")}
         />
         <SidebarItem
           icon={<GitBranch className="h-5 w-5" />}

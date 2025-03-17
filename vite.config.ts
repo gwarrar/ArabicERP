@@ -3,14 +3,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { tempo } from "tempo-devtools/dist/vite";
 
-// Define conditional plugins array
-const conditionalPlugins = [];
-
-// Add tempo plugin conditionally
-if (process.env.TEMPO === "true") {
-  conditionalPlugins.push(["tempo-devtools/swc", {}]);
-}
-
 // https://vitejs.dev/config/
 export default defineConfig({
   base:
@@ -18,12 +10,28 @@ export default defineConfig({
       ? "/"
       : process.env.VITE_BASE_PATH || "/",
   optimizeDeps: {
-    entries: ["src/main.tsx", "src/tempobook/**/*"],
+    exclude: ["src/tempobook"],
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "lucide-react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-label",
+      "@radix-ui/react-switch",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tooltip",
+      "qrcode.react",
+    ],
     force: true,
+    esbuildOptions: {
+      jsx: "automatic",
+    },
   },
   plugins: [
     react({
-      plugins: [...conditionalPlugins],
+      plugins: process.env.TEMPO === "true" ? [["tempo-devtools/swc", {}]] : [],
     }),
     tempo(),
   ],
@@ -35,5 +43,11 @@ export default defineConfig({
   },
   server: {
     allowedHosts: process.env.TEMPO === "true" ? true : undefined,
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+    sourcemap: true,
   },
 });

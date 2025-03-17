@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,18 +33,28 @@ import {
   Search,
   Filter,
   Edit,
+  DollarSign,
+  Tag,
+  Percent,
+  Eye,
+  Trash,
+  Plus,
+  Printer,
 } from "lucide-react";
+import ProductPricingDetails from "./ProductPricingDetails";
 
 interface ProductDetailsProps {
   open: boolean;
   onClose: () => void;
   product: any;
+  onSavePricing?: () => void;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   open,
   onClose,
   product,
+  onSavePricing,
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [cityFilter, setCityFilter] = useState("all");
@@ -209,6 +220,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             <TabsTrigger value="movements">
               <TrendingUp className="h-4 w-4 ml-2" />
               حركة المادة
+            </TabsTrigger>
+            <TabsTrigger value="pricing">
+              <DollarSign className="h-4 w-4 ml-2" />
+              التسعير والعروض
             </TabsTrigger>
           </TabsList>
 
@@ -386,6 +401,83 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </CardContent>
             </Card>
 
+            <Card className="mt-4">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                  <Package className="h-4 w-4 ml-2" />
+                  رولونات القماش المتوفرة
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table className="border-collapse">
+                  <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                    <TableRow>
+                      <TableHead>رقم الرولون</TableHead>
+                      <TableHead>الطول</TableHead>
+                      <TableHead>العرض</TableHead>
+                      <TableHead>اللون</TableHead>
+                      <TableHead>الموقع</TableHead>
+                      <TableHead>الحالة</TableHead>
+                      <TableHead>تاريخ الاستلام</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {/* Generate sample fabric rolls based on product */}
+                    {product.inStock > 0 ? (
+                      Array.from(
+                        {
+                          length: Math.max(1, Math.floor(product.inStock / 10)),
+                        },
+                        (_, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">{`${product.sku}-R${String(i + 1).padStart(3, "0")}`}</TableCell>
+                            <TableCell>{`${Math.floor(30 + Math.random() * 20)} متر`}</TableCell>
+                            <TableCell>{`${Math.floor(140 + Math.random() * 20)} سم`}</TableCell>
+                            <TableCell>
+                              {product.tags && product.tags.length > 0
+                                ? product.tags[
+                                    Math.floor(
+                                      Math.random() * product.tags.length,
+                                    )
+                                  ]
+                                : "أبيض"}
+                            </TableCell>
+                            <TableCell>{`المستودع الرئيسي - رف ${String.fromCharCode(65 + Math.floor(Math.random() * 6))}${Math.floor(Math.random() * 10)}`}</TableCell>
+                            <TableCell>
+                              <span
+                                className={`px-2 py-0.5 text-xs ${Math.random() > 0.2 ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"} rounded-full`}
+                              >
+                                {Math.random() > 0.2 ? "متوفر" : "قيد الفحص"}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              {new Date(
+                                Date.now() -
+                                  Math.floor(Math.random() * 30) *
+                                    24 *
+                                    60 *
+                                    60 *
+                                    1000,
+                              ).toLocaleDateString("ar-SA")}
+                            </TableCell>
+                          </TableRow>
+                        ),
+                      )
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={7}
+                          className="text-center py-8 text-muted-foreground"
+                        >
+                          لا توجد رولونات متوفرة لهذا المنتج
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <AlertTriangle className="h-4 w-4 ml-1 text-amber-500" />
@@ -394,6 +486,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               <div className="text-sm">
                 إجمالي الكمية:{" "}
                 <span className="font-medium">{totalQuantity}</span>
+                {product.inStock > 0 && (
+                  <span className="mr-4">
+                    إجمالي {Math.max(1, Math.floor(product.inStock / 10))} رولون
+                    بإجمالي {product.inStock} {product.unit}
+                  </span>
+                )}
               </div>
             </div>
           </TabsContent>
@@ -526,16 +624,40 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Pricing Tab */}
+          <TabsContent value="pricing" className="mt-0">
+            <ProductPricingDetails
+              productId={product.id}
+              onSave={onSavePricing}
+            />
+          </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 mt-6">
-          <Button variant="outline" onClick={onClose}>
-            إغلاق
-          </Button>
-          <Button variant="outline">
-            <Edit className="ml-2 h-4 w-4" />
-            تعديل
-          </Button>
+        <div className="flex justify-between gap-2 mt-6">
+          <div>
+            {activeTab === "warehouses" && (
+              <Button>
+                <Plus className="h-4 w-4 ml-2" />
+                إضافة رولون جديد
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {activeTab === "warehouses" && (
+              <Button variant="outline">
+                <Printer className="h-4 w-4 ml-2" />
+                طباعة التقرير
+              </Button>
+            )}
+            <Button variant="outline" onClick={onClose}>
+              إغلاق
+            </Button>
+            <Button variant="outline">
+              <Edit className="ml-2 h-4 w-4" />
+              تعديل
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
